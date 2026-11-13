@@ -45,7 +45,7 @@ for lab, u in zip(labels, roots):
     ax.scatter([u], [H(u)], s=22, color=col, edgecolor="white", lw=0.6, zorder=5)
     ax.scatter([u], [P(u)], s=22, color=col, edgecolor="white", lw=0.6, zorder=5)
     ax.text(u - (0.045 if lab == "A" else 0), H(u) + 0.075, lab, color=col, ha="center", va="bottom", fontsize=8.5, fontweight="bold")
-ax.text(1.0, 1.43, "Heun1", color=C["Heun1"], fontsize=8.5, fontweight="bold", ha="center")
+ax.text(0.33, 1.47, "Heun1", color=C["Heun1"], fontsize=8.5, fontweight="bold", ha="left")
 ax.text(0.98, 0.70, "DPM++2S", color=C["DPM++2S"], fontsize=8.5, fontweight="bold", ha="left")
 ax.text(1.2, data.FIG1_TARGET + 0.035, "shared Heun output 1.25", color=C["muted"], fontsize=7.5,
         ha="center", va="bottom", style="italic")
@@ -59,11 +59,11 @@ fig.text(0.008, 0.985, r"(a) Exact maps on one image line, noise $1\to1/4$", fon
 bx = fig.add_axes([0.065, 0.0, 0.36, 0.165]); bx.axis("off")
 bx.set_xlim(0, 1); bx.set_ylim(-0.55, 1)
 bx.add_patch(Rectangle((0, 0.42), 0.5, 0.2, color=C["Heun1"], lw=0))
-bx.add_patch(Rectangle((0.5, 0.42), 0.5, 0.2, color=C["Heun2"], lw=0))
+bx.add_patch(Rectangle((0.5, 0.42), 0.5, 0.2, color=C["DPM++2S"], lw=0))
 bx.plot([0.5, 0.5], [0.3, 0.75], color=C["ink"], lw=0.8)
 bx.text(0.5, 0.25, r"$1/2$", ha="center", va="top", fontsize=7.5)
 bx.text(0.2, 0.25, "collision possible", ha="center", va="top", color=C["Heun1"], fontsize=7.5)
-bx.text(0.79, 0.25, "universally protected", ha="center", va="top", color=C["Heun2"], fontsize=7.5)
+bx.text(0.79, 0.25, "universally protected", ha="center", va="top", color=C["DPM++2S"], fontsize=7.5)
 bx.text(0.0, 0.8, r"Heun substep ratio $\rho=b/a$", ha="left", va="bottom", fontsize=7.5, fontweight="bold")
 bx.text(0.0, -0.3, r"Minimum protected Heun length from $a$ to $b$: $\lceil\log_2(a/b)\rceil$ substeps.", ha="left", va="top", fontsize=7.5, color=C["muted"])
 

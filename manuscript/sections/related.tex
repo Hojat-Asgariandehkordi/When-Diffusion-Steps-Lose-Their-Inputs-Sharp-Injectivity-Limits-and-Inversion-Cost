@@ -1,9 +1,7 @@
-\section{Related work and the retained state}
+\section{Related work}
 \label{sec:related}
-\paragraph{Uniqueness of the executed step.}
 For one exact DDIM prediction, Verbii~\cite{verbii2026} gives a strongly convex objective with a unique inverse, even in a two-atom example where the inversion iteration cycles. Verbii also reports multiple roots for an amplitude-scaled, off-Bayes score on a two-atom law. The covariance identity and invertibility of strongly convex gradients are established tools~\cite{gribonval2021,huang2021}. Our sufficient direction applies this geometry in first-stage coordinates. The coupled converse exploits the fact that one stage can be at a sharp posterior transition while the other is saturated, or that both can be steep at once. It yields multiple roots of the step equation and an exact Heun schedule threshold. Positive coefficient decompositions also appear in numerical methods that preserve strong stability~\cite{gottlieb2001,gottlieb2018}.
 
-\paragraph{Solving the residual and designing a reversible step.}
 Hong et al.~\cite{hong2024} solve implicit inverse equations of the executed DPM discretization. Our learned-model controls use that same residual-solving principle with different optimizers and work ceilings. The multistep equations in their method also involve unknown history. EDICT, BDIA and BELM~\cite{wallace2023,zhang2024,wang2024} use designed recurrences that are algebraically reversible when two states are retained. Rex~\cite{rex2026} wraps an exponential integrator in a reversible coupling and includes DPM++2S as a base scheme. We analyze the ordinary single-output 2S map. Near-reversible EES methods construct forward and reverse steps with small round-trip error and study stability under edits~\cite{barancikova2026}. Inversion-oriented timestep rescheduling~\cite{sun2026} optimizes an error surrogate at a fixed budget. \Cref{tab:related} summarizes the different guarantees.
 
 \begin{table*}[!t]

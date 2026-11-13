@@ -7,11 +7,17 @@ The distinction matters when a generative pipeline stores a checkpoint on a traj
 
 We study the ordinary discrete step itself. Prior work has solved its residual equation numerically~\cite{hong2024} and shown that an exact one-prediction DDIM step has a unique inverse~\cite{verbii2026}. Here the second prediction consumes a state computed from the first. We show when that coupling admits a global inverse and when it can create multiple roots of the step equation.
 
-\begin{itemize}
-\item \textbf{A sharp criterion for two coupled predictions.} Covariance geometry gives a global inverse for nonnegative weights. A fixed two-atom prior gives the converse by making either negative weight dominate at an appropriate input.
-\item \textbf{The minimum protected Heun schedule.} The criterion gives a per-step threshold of $1/2$. A collision at the first subthreshold step survives the rest of a fixed schedule, which gives the exact minimum length for universal protection.
-\item \textbf{A choice between two successful inverses.} On the separately frozen FFHQ64 panel, both DPM++2S and Heun2 recover all clean sources at the same work ceiling. DPM++2S takes fewer inverse evaluations and Heun2 follows the fine-step trajectory more closely. We measure these properties separately and keep the learned-model comparison distinct from the exact guarantee.
-\end{itemize}
+Our paper offers the following contributions. \textbf{A sharp criterion for two coupled predictions:} covariance geometry gives a global inverse for nonnegative weights, and a fixed two-atom prior gives the converse by making either negative weight dominate at an appropriate input. \textbf{The minimum protected Heun schedule:} the criterion gives a per-step threshold of $1/2$, and because a collision at the first subthreshold step survives the rest of a fixed schedule, it also gives the exact minimum length for universal protection. \textbf{A choice between two successful inverses:} on the separately frozen FFHQ64 panel, both DPM++2S and Heun2 recover all clean sources at the same work ceiling, with DPM++2S taking fewer inverse evaluations and Heun2 following the fine-step trajectory more closely. We measure these properties separately and keep the learned-model comparison distinct from the exact guarantee. \Cref{fig:overview} summarizes the setting, the test and its consequences.
+
+\begin{figure*}[t]
+\centering
+\includegraphics[width=\textwidth]{../figures/overview.pdf}
+\caption{\textbf{Overview.}
+\textbf{(a)} A deterministic two-stage step $F_a$ maps an input at noise $a$ to a saved state at noise $b$. The inverse has only that saved state, the map and its schedule. The tiles are the affine states of \cref{fig:collision}.
+\textbf{(b)} For exact posterior means, $F_a$ is globally invertible for every prior and scale exactly when both prediction weights are nonnegative (\Cref{thm:sharp}). Otherwise a fixed two-atom prior folds the map, as in the Heun1 curve of \cref{fig:collision}.
+\textbf{(c)} On $2\to1/8$, one DPM++2S step meets the test, while a fixed Heun schedule needs four half-ratio substeps (\Cref{cor:schedule}). On the learned FFHQ64 panel (\cref{tab:recovery}), bars give clean recoveries out of 64 at the 160-forward ceiling, and parentheses give mean iterative inverse forwards. Both Heun2 substep ratios lie below $1/2$.}
+\label{fig:overview}
+\end{figure*}
 
 \begin{figure*}[t]
 \centering
