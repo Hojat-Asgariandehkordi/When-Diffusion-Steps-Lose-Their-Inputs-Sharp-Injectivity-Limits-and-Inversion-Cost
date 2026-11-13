@@ -2,7 +2,8 @@
 import matplotlib as mpl
 
 TEXTWIDTH_MAIN = 6.875   # CVPR two-column \textwidth, inches
-TEXTWIDTH_SUPP = 6.5     # supplement (1in margins)
+TEXTWIDTH_SUPP = 6.5
+COLWIDTH = 3.28        # CVPR \columnwidth, inches     # supplement (1in margins)
 
 COL = {
     "Heun1": "#B34016",
@@ -18,7 +19,7 @@ COL = {
 }
 MARK = {"Heun1": "o", "DPM++2S": "s", "Heun2": "^", "Midpoint1": "v", "Euler2": "D"}
 # Input states A, B, C in Fig. 1
-ABC = {"A": "#7B3F9E", "B": "#1C7C74", "C": "#9A6A12"}
+ABC = {"A": "#7B3F9E", "B": "#4F5B66", "C": "#9A6A12"}
 
 
 def apply():
@@ -34,12 +35,13 @@ def apply():
         "mathtext.fontset": "stix",
         "pdf.fonttype": 42,
         "ps.fonttype": 42,
-        "font.size": 8,
-        "axes.titlesize": 8.5,
-        "axes.labelsize": 8,
-        "xtick.labelsize": 7.5,
-        "ytick.labelsize": 7.5,
-        "legend.fontsize": 7.5,
+        "font.size": 9,
+        "figure.constrained_layout.use": False,
+        "axes.titlesize": 9,
+        "axes.labelsize": 9,
+        "xtick.labelsize": 8,
+        "ytick.labelsize": 8,
+        "legend.fontsize": 8,
         "axes.edgecolor": "#9AA3AB",
         "axes.linewidth": 0.6,
         "axes.labelcolor": COL["ink"],

@@ -10,16 +10,12 @@
 \begin{document}
 \maketitle
 \begin{abstract}
-Which diffusion steps preserve enough information to recover their inputs from one saved output?
-For a coupled two-stage family with exact Gaussian posterior means of one compact prior, nonnegative prediction weights characterize global smooth invertibility for every dimension, prior and positive source noise.
-If either weight is negative, a fixed two-atom prior produces three distinct inputs for the same output at sufficiently small source noise.
-Standard sigma-Heun therefore needs a noise ratio of at least $1/2$ at every substep to guarantee inversion universally. The shortest such fixed schedule from $a$ to $0<b<a$ takes $\lceil\log_2(a/b)\rceil$ steps.
-On a separately frozen FFHQ64 panel over $2\to1/8$, one-step DPM++2S and two-step Heun each recovered \FFHQDPMRecovered{} clean sources under a \FFHQCap{}-forward Anderson ceiling. DPM++2S used \FFHQDPMWork{} mean iterative forwards with forward RMS \FFHQDPMFlow{} against Heun128, and two-step Heun used \FFHQHeunTwoWork{} with RMS \FFHQHeunTwoFlow{}. One-step Heun recovered \FFHQHeunOneRecovered{}.
+Diffusion models are often run backwards: an editing or replay pipeline must recover the state that produced a saved image. When only that saved image is kept, recovery is possible only if the sampling step never sends two different inputs to the same output. We show that, for the widely used two-stage steps that combine two denoising predictions, a simple sign test decides this. If both prediction weights are nonnegative, the step can be inverted for every data distribution and noise level. If either weight is negative, a fixed distribution of two images makes three different inputs share one output. The test explains why Heun's method must reduce the noise by at most a factor of two per step, gives the shortest schedule that keeps this guarantee, and shows that a single DPM-Solver++ step always passes. On pretrained image diffusion models, the guaranteed one-step DPM-Solver++ map and a two-step Heun schedule each let a numerical inverse recover all 64 face images under the same budget, while one Heun step recovers only five. The sign test therefore gives a design rule for output-only recovery, and the experiments measure what each choice costs.
 \end{abstract}
 \input{sections/intro}
+\input{sections/related}
 \input{sections/theory}
 \input{sections/solvers}
-\input{sections/related}
 \input{sections/experiments}
 \input{sections/results}
 \input{sections/choice}

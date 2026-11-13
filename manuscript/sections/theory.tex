@@ -1,43 +1,96 @@
 \section{When the step preserves its input}
 \label{sec:theory}
-Let $X$ have compactly supported law $\pi$ on $\R^d$ and let $Z\sim\mathcal N(0,I)$ be independent. Write $D_s(x)=\E[X\mid X+sZ=x]$ for the Gaussian posterior mean at $s>0$, using its smooth convolution formula also for atomic priors. Fix $r>0$, $0<q<1$, $\kappa>0$, and real weights with $r+w_1+w_2=1$. At source noise $a>0$ define
+\paragraph{Data, noise and the exact denoiser.}
+Let $X\in\R^d$ be a random image with law $\pi$, the \emph{prior}, and assume $\pi$ has compact support, contained in a Euclidean ball of radius $R$ around some point. Let $Z\sim\mathcal N(0,I_d)$ be independent of $X$. At noise level $s>0$ we observe $x=X+sZ$, and the exact denoiser is the posterior mean
+\begin{equation}
+ D_s(x)=\E[X\mid X+sZ=x]
+ =\frac{\int u\,e^{-\|x-u\|^2/2s^2}d\pi(u)}{\int e^{-\|x-u\|^2/2s^2}d\pi(u)}.
+ \label{eq:posterior}
+\end{equation}
+The right-hand side is smooth in $x$ for every compact prior, including priors made of finitely many images, and we use it as the definition of $D_s$ throughout. A learned diffusion network approximates $D_s$; the theory concerns the exact map.
+
+\paragraph{The two-stage step.}
+A sampler step moves a state from source noise $a$ to a smaller target noise $b$, and we write $\rho=b/a\in(0,1)$ for the \emph{denoising ratio}. A two-stage step first forms a \emph{stage state} that keeps a fraction $q\in(0,1)$ of the input and moves the rest toward the first prediction, then evaluates a second prediction at the stage state and noise $\kappa a$ with $\kappa>0$. The output mixes the input and the two predictions with a residual weight $r>0$ and prediction weights $w_1,w_2\in\R$:
 \begin{align}
  p_a(x)&=qx+(1-q)D_a(x),\nonumber\\
  F_a(x)&=rx+w_1D_a(x)+w_2D_{\kappa a}(p_a(x)).
  \label{eq:family}
 \end{align}
-The same prior supplies both posterior means. The first prediction moves the input to the second, even when its own output weight $w_1$ is zero.
+We require $r+w_1+w_2=1$, so that for a point-mass prior at $c$, where $D_s\equiv c$, the state $c$ is left fixed. Both predictions use the same prior, and the first prediction influences the output through the stage state even when its own weight $w_1$ is zero. \Cref{sec:solvers} shows that Heun, explicit midpoint and DPM-Solver++(2S) are all members of this family with $r=\rho$.
+
+We call $F_a$ \emph{invertible} if it is a global orientation-preserving smooth diffeomorphism of $\R^d$: every output has exactly one input, and the inverse is smooth.
 
 \begin{theorem}[Universal invertibility]
 \label{thm:sharp}
-With these coefficients fixed, $F_a$ is a global orientation-preserving smooth diffeomorphism for every dimension, compact prior and positive source scale $a$ if and only if $w_1,w_2\ge0$. If either weight is negative, the fixed prior $(\delta_{-1}+\delta_{+1})/2$ has an open interval of outputs with at least three preimages each for every sufficiently small $a>0$.
+Fix $r>0$, $0<q<1$, $\kappa>0$ and $w_1,w_2$ with $r+w_1+w_2=1$. Then $F_a$ is invertible for every dimension $d$, every compact prior $\pi$ and every source noise $a>0$ if and only if $w_1\ge0$ and $w_2\ge0$. If either weight is negative, the fixed prior $\pi=(\delta_{-1}+\delta_{+1})/2$ on $\R$ has an open interval of outputs with at least three preimages each, for every sufficiently small $a>0$.
 \end{theorem}
 
-\paragraph{Nonnegative weights preserve the input.}
-Differentiating the Gaussian posterior mean gives
+\paragraph{Why nonnegative weights preserve the input.}
+Differentiating \cref{eq:posterior} under the integral gives the covariance identity
 \begin{equation}
- \nabla D_s(x)=s^{-2}\Cov(X\mid X+sZ=x)\succeq0.
+ \nabla D_s(x)=s^{-2}\Cov(X\mid X+sZ=x).
  \label{eq:covariance}
 \end{equation}
-Thus $D_s$ is a convex gradient~\cite{gribonval2021}, bounded by compactness of the support. Write $A=\nabla D_a(x)$, $B=\nabla D_{\kappa a}(p_a(x))$, and $E=qI+(1-q)A$. The product $BE$ in the step Jacobian $J$ can be nonsymmetric. The positive definite $E$ commutes with $A$, so a similarity transform gives
+A covariance matrix is symmetric and positive semidefinite, so $D_s$ is the gradient of a convex function~\cite{gribonval2021}. Because the support lies in a ball of radius $R$, every posterior variance along a unit direction is at most $R^2$, hence
+\begin{equation}
+ 0\preceq\nabla D_s(x)\preceq (R^2/s^2)\,I_d .
+ \label{eq:jacbound}
+\end{equation}
+Now fix an input $x$ and abbreviate the three Jacobians that enter the chain rule,
+\[
+ A=\nabla D_a(x),\quad B=\nabla D_{\kappa a}(p_a(x)),\quad E=qI+(1-q)A .
+\]
+Here $A$ and $B$ are positive semidefinite by \cref{eq:covariance}, and $E=\nabla p_a(x)$ is symmetric with $E\succeq qI$. The Jacobian of the step is
+\begin{equation}
+ J=\nabla F_a(x)=rI+w_1A+w_2BE .
+ \label{eq:jacobian}
+\end{equation}
+The product $BE$ need not be symmetric, so $J$ is not obviously invertible. However, $E$ is positive definite and commutes with $A$, so conjugating by $E^{1/2}$ gives
 \begin{equation}
  E^{1/2}JE^{-1/2}
- =rI+w_1A+w_2E^{1/2}BE^{1/2}\succeq rI .
+ =rI+w_1A+w_2E^{1/2}BE^{1/2}\succeq rI
  \label{eq:similarity}
 \end{equation}
-This gives a local inverse and positive determinant. In Euclidean norm, $\|J^{-1}\|_2\le\sqrt{\operatorname{cond}_2(E)}/r$.
+whenever $w_1,w_2\ge0$, since each added term is positive semidefinite. The symmetric matrix on the left has all eigenvalues at least $r$, so $J$ has a positive determinant and $\|J^{-1}\|_2\le\sqrt{\cond_2(E)}/r$. The step is therefore a local diffeomorphism everywhere.
 
-For two inputs, average $\nabla D_a$ along the segment between them and average $\nabla D_{\kappa a}$ along the separate segment between their stage states. Their exact finite difference has the same matrix form as $J$ with these positive semidefinite averages. The matrix is invertible, so distinct inputs have distinct outputs. Since the predictions are bounded, $F_a(x)=rx+O(1)$ is proper. Its image is open by local invertibility and closed by properness, hence it is all of $\R^d$. Supplement~A gives the global inverse bound and a convex-gradient factorization.
-
-\paragraph{A negative weight can fold the map.}
-For the two equally weighted atoms, $D_s(x)=\tanh(x/s^2)$. The posterior derivative is steep near its transition at zero and small away from it. If $w_2<0$, evaluating at zero puts both posteriors at their transitions. The product of their derivatives dominates the slope:
+Local invertibility does not exclude two distant inputs with the same output, so we repeat the argument for finite differences. For inputs $x,y$ with $v=x-y$, the averaged Jacobian $\bar A=\int_0^1\nabla D_a(y+tv)\,dt$ satisfies $D_a(x)-D_a(y)=\bar Av$, and similarly $p_a(x)-p_a(y)=\bar Ev$ with $\bar E=qI+(1-q)\bar A$. Averaging $\nabla D_{\kappa a}$ along the segment between the two stage states gives a matrix $\bar B$, and
 \begin{equation}
- \lim_{a\downarrow0}a^4 F'_a(0)=w_2(1-q)/\kappa^2<0.
+ F_a(x)-F_a(y)=\bigl[rI+w_1\bar A+w_2\bar B\bar E\bigr]v .
+ \label{eq:finitediff}
 \end{equation}
-If $w_2\ge0$ and $w_1<0$, evaluate at $x=a^2$. The first derivative is $a^{-2}\operatorname{sech}^2(1)$, while the stage stays above $(1-q)\tanh(1)>0$. The second posterior saturates, making its derivative exponentially small. Hence
+The averages inherit positive semidefiniteness, so the similarity in \cref{eq:similarity} applies again and the bracket is invertible. Using $qI\preceq\bar E\preceq[q+(1-q)R^2/a^2]I$ from \cref{eq:jacbound}, this yields a global lower bound on how much the step can contract distances,
 \begin{equation}
- \lim_{a\downarrow0}a^2 F'_a(a^2)=w_1\operatorname{sech}^2(1)<0.
+ \|F_a(x)-F_a(y)\|_2\ge c_*\|x-y\|_2,
+ \label{eq:colip}
 \end{equation}
-The prior stays fixed in both limits. At fixed $a$, the slope tends to $r>0$ in the tails and the outputs go to opposite infinities. Take a short decreasing segment $[u,v]$. Each output strictly between $F_a(v)$ and $F_a(u)$ is attained inside the segment, to its left and to its right. This gives three distinct preimages by continuity.
+\begin{equation}
+ c_*=r\Big/\sqrt{1+\tfrac{(1-q)R^2}{q\,a^2}}>0 .
+ \nonumber
+\end{equation}
+Distinct inputs thus have distinct outputs. Since the predictions are bounded, $F_a(x)=rx+O(1)$, so $F_a$ is proper. Its image is open by local invertibility and closed by properness, hence all of $\R^d$. Supplement~A gives the remaining details.
 
-The necessity is universal over priors and scales. A particular map can remain injective with a negative weight, as for a point-mass prior where the step has constant slope $r$. The converse uses $q<1$. At $q=1$ nonnegative weights still suffice by the symmetric Jacobian. At the coincident-scale boundary $q=1,\kappa=1$ the predictions coincide and the exact criterion becomes $w_1+w_2\ge0$.
+\paragraph{Why a negative weight can fold the map.}
+For the two equally weighted atoms at $\pm1$ in one dimension, \cref{eq:posterior} becomes $D_s(x)=\tanh(x/s^2)$ with derivative $D_s'(x)=s^{-2}\operatorname{sech}^2(x/s^2)$. This derivative is of order $s^{-2}$ near the posterior transition at $x=0$ and exponentially small away from it. Writing $A_a=D'_a$ and $B_a=D'_{\kappa a}$, the scalar chain rule gives
+\begin{equation}
+ F'_a(x)=r+w_1A_a(x)+w_2B_a(p_a(x))\,[q+(1-q)A_a(x)] .
+ \label{eq:scalarderiv}
+\end{equation}
+If $w_2<0$, evaluate at $x=0$, where both the input and the stage state sit at the transition. The product of the two steep derivatives dominates and
+\begin{equation}
+ \lim_{a\downarrow0}a^4F'_a(0)=w_2(1-q)/\kappa^2<0.
+\end{equation}
+If $w_2\ge0$ and $w_1<0$, evaluate at $x=a^2$. The first derivative equals $a^{-2}\operatorname{sech}^2(1)$, while the stage state stays above $(1-q)\tanh(1)>0$, where the second posterior has saturated and its derivative is exponentially small in $1/a^2$. Hence
+\begin{equation}
+ \lim_{a\downarrow0}a^2F'_a(a^2)=w_1\operatorname{sech}^2(1)<0.
+\end{equation}
+In either case $F_a$ decreases somewhere for small $a$, while $F'_a\to r>0$ in both tails and the outputs run to $-\infty$ and $+\infty$. Pick a short decreasing segment $[u,v]$. Every output strictly between $F_a(v)$ and $F_a(u)$ is attained inside the segment, to its left and to its right, which gives three distinct preimages by continuity. The prior is the same for every $a$.
+
+\paragraph{Scope of the criterion.}
+The necessity is universal over priors and noise levels, not a statement about every particular map. A point-mass prior, for instance, makes every member of the family affine with slope $r$, hence injective whatever the signs. The converse uses $q<1$. When $q=1$, nonnegative weights still suffice by the symmetric Jacobian, and in the coincident case $q=\kappa=1$ the two predictions merge and the exact criterion becomes $w_1+w_2\ge0$.
+
+The bound \cref{eq:colip} also transfers to approximate denoisers. If a learned step is written as $\widehat F_a=F_a+e$ with an error map $e$ whose Lipschitz constant is below $c_*$, then
+\begin{equation}
+ \|\widehat F_a(x)-\widehat F_a(y)\|_2\ge(c_*-\operatorname{Lip}(e))\,\|x-y\|_2,
+ \label{eq:transfer}
+\end{equation}
+and a contraction argument shows that $\widehat F_a$ is again onto (Supplement~A). The learned experiments do not measure such a uniform error bound, so they are reported separately from the exact guarantee.

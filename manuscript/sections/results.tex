@@ -1,24 +1,52 @@
 \section{Recovery, forward fidelity and work}
 \label{sec:results}
+We organize the results around three questions. Does a step outside the guarantee fail to recover sources in practice, and does a guaranteed step succeed? When several steps succeed, what distinguishes them? And is the failure caused by the sign of the first weight, or by other differences between the maps?
 
-\paragraph{FFHQ64 at 160 inverse forwards.}
-On the separately frozen FFHQ64 panel, DPM++2S and Heun2 each recover \FFHQDPMRecovered{} clean sources (\cref{fig:tradeoff,tab:recovery}). DPM++2S uses two calls to advance the state and \FFHQDPMWork{} mean iterative calls to recover it. Heun2 uses four to advance and \FFHQHeunTwoWork{} to recover, with lower mean forward RMS (\FFHQHeunTwoFlow{} versus \FFHQDPMFlow{}). Both also recover all noisy targets at coordinate noise SD $10^{-3}$. Heun1 recovers \FFHQHeunOneRecovered{} clean sources. Its paired clean failure difference against DPM++2S is large (DPM++2S minus Heun1, \FFHQContrast{} percentage points, with a 95\% seed-bootstrap interval).
+\begin{figure}[t]
+\centering
+\includegraphics[width=\columnwidth]{../figures/tradeoff.pdf}
+\caption{\textbf{Two FFHQ64 choices recover the same clean sources.} Each marker is one step map in one cohort; labels give clean recoveries. Bars are 95\% seed-bootstrap intervals for mean forward RMS (log axis); on FFHQ64 they are narrower than the markers. The arrow joins the two complete-recovery maps on FFHQ64. Dashed lines mark each cohort's Anderson ceiling.}
+\label{fig:tradeoff}
+\end{figure}
 
-Both substep ratios of the tested Heun2 grid are below $1/2$ (Supplement~B), placing this successful schedule outside the universal guarantee in \cref{cor:schedule}.
+\paragraph{The guaranteed step recovers every source.}
+On the separately frozen FFHQ64 panel, DPM++2S and Heun2 each recover \FFHQDPMRecovered{} clean sources at the 160-forward ceiling (\cref{fig:tradeoff,tab:recovery}), and both also recover every noisy target at coordinate noise $10^{-3}$. One Heun step, whose first weight is $-6.5625$, recovers only \FFHQHeunOneRecovered{} clean sources. The paired difference in clean failure rate, DPM++2S minus Heun1, is \FFHQContrast{} percentage points with a 95\% seed-bootstrap interval. The same ordering holds on the two CIFAR-10 cohorts. DPM++2S recovers \PrimaryDPMRecovered{} clean and all noisy sources on the reused CIFAR-VP panel at \PrimaryCap{} forwards and \VEReconstruction{} on the separately frozen CIFAR-VE panel, while Heun1 recovers 18/64 and 10/32. Zero observed failures give two-sided exact 95\% upper failure limits of \PrimaryFailureBound{} at $N=64$ and \VEFailureBound{} at $N=32$.
 
-\paragraph{Separate CIFAR-VP and VE protocols.}
-DPM++2S recovers \PrimaryDPMRecovered{} clean and all noisy sources on the reused CIFAR-VP panel at \PrimaryCap{} forwards. Euler2 is also successful with similar work, and sigma-midpoint has lower forward RMS with more recovery failures. Heun2 improves forward fidelity and recovers all sources at this ceiling. On the separately frozen CIFAR-VE panel, DPM++2S recovers \VEReconstruction{} under AA\FFHQCap{}. Heun2 recovers 31/32. Zero observed failures give two-sided exact 95\% upper failure limits of \PrimaryFailureBound{} at $N=64$ and \VEFailureBound{} at $N=32$. The Heun64/128 mean RMS disagreements are \FFHQRefinement{} on FFHQ, \PrimaryRefinement{} on CIFAR-VP and \VERefinement{} on CIFAR-VE.
+\paragraph{Among successful steps, work and fidelity trade off.}
+DPM++2S needs two denoiser calls to advance the state and \FFHQDPMWork{} mean iterative calls to recover it. Heun2 needs four calls to advance and \FFHQHeunTwoWork{} to recover, but follows the fine trajectory more closely, with mean forward RMS \FFHQHeunTwoFlow{} against \FFHQDPMFlow{}. The arrow in \cref{fig:tradeoff} shows this exchange: the two maps reach the same recovery, and moving from DPM++2S to Heun2 halves the forward error at roughly double the inverse work. Heun2 succeeds even though both of its substep ratios are below $1/2$. The theorem guarantees invertibility for every prior; it does not predict failure for a particular learned network, and Heun2 is an example of a schedule outside the guarantee that inverts well on these checkpoints. On the reused CIFAR-VP panel, Euler2 is also successful with work similar to DPM++2S, sigma-midpoint has lower forward RMS but more recovery failures, and Heun2 again recovers all sources with the lowest forward error. On CIFAR-VE, Heun2 recovers 31/32. The Heun64/128 mean RMS disagreements of \FFHQRefinement{} on FFHQ64, \PrimaryRefinement{} on CIFAR-VP and \VERefinement{} on CIFAR-VE show that the Heun128 reference is converged far below these forward errors.
+
+\begin{figure}[t]
+\centering
+\includegraphics[width=\columnwidth]{../figures/controlled.pdf}
+\caption{\textbf{Holding the stage fixed and varying only $w_1$} on FFHQ64 for 12 matched seeds, with $w_2=15/16-w_1$. $w_1=0$ is DPM++2S and $w_1=-6.56$ gives it Heun1's weight. Shaded: $w_1<0$. Numbers above (a) count recovered sources in both blocks. (a) Mean source RMS; dashed, the recovery threshold. (b) Mean iterative forwards; dashed, the ceiling. (c) Mean forward RMS against Heun128. (d) Seed median of the smallest centered gain over four random directions.}
+\label{fig:controlled}
+\end{figure}
+
+\paragraph{The first weight, with everything else fixed.}
+Heun1 and DPM++2S differ in more than the sign of $w_1$. Heun1 retains less of the input in its stage ($q=1/16$ against $1/4$) and evaluates its second prediction at a lower noise ($0.125$ against $0.5$). To isolate the weight, the fixed-stage sweep in \cref{fig:controlled} keeps the DPM++2S stage, $q=\kappa=1/4$, and varies only $w_1$ with $w_2=15/16-w_1$. Varying the weight moves the output along a single direction,
+\begin{equation}
+ F_{w_1}(x)=F_0(x)+w_1\bigl[D_a(x)-D_{a/4}(p_a(x))\bigr],
+ \label{eq:sweep}
+\end{equation}
+so each arm is DPM++2S plus a multiple of the difference between the two predictions. On both intervals, $2\to1/8$ and $1\to1/16$, every weight between $-0.5$ and $0.5$ recovers all twelve sources, while transferring Heun1's weight $w_1=-6.5625$ to the DPM++2S stage reaches the ceiling on every source and recovers none (\cref{fig:controlled}a,b). Mild negative weights are not harmful here. At $w_1=-0.5$ on $2\to1/8$, mean forward RMS drops from $0.0460$ to $0.0347$ relative to $w_1=0$, at the cost of $14.8$ more mean iterative calls (\cref{fig:controlled}c), and the lower-noise block shows the same exchange. Panel (d) reports the smallest centered finite-difference gain $g_{\rm rand}=\rms(F(x+hv)-F(x-hv))/(2h)$ over four random unit-RMS directions $v$ with $h=10^{-3}$. It is larger at $w_1=-6.5625$ than at zero in both blocks. Random directions therefore do not detect the sensitivity that defeats the inverse. These gains sample directional sensitivity at the source and are not singular values, so they do not locate it. The full table and paired contrasts are in Supplement~G.
+
+\begin{figure}[t]
+\centering
+\includegraphics[width=\columnwidth]{../figures/controls_main.pdf}
+\caption{\textbf{Stronger optimizers and larger budgets do not rescue Heun1.} Clean-target failures on the reused CIFAR-10 VP cohort ($N=64$) at three iterative ceilings, for Anderson alone and for two hybrids that continue from the Anderson iterate. Bars are exact binomial 95\% intervals. The noisy arm is in Supplement~E.}
+\label{fig:controls}
+\end{figure}
 
 \paragraph{Sensitivity to interval, optimizer and budget.}
-On the reused CIFAR-VP seeds, all five maps recovered all 64 sources in both target arms in the earlier, shorter $2\to1/2$ GPU experiment, under a ceiling of 80 \emph{map evaluations}. That cap gives unequal denoiser work across maps. On the long interval, warm-started L-BFGS and Newton--GMRES at the 320-traversal ceiling retain the large Heun1 gap and introduce a few Heun2 misses. A contiguous 20\,s AA allocation including initialization also retains the gap. The native strong-Wolfe L-BFGS diagnostic still has \NativeHeunFailure{} clean Heun1 failures on the first eight reused indices, at a mean of \NativeHeunWork{} charged traversals under an unequal-work protocol. The post-hoc geometric Heun4 repeat meets the half-ratio criterion. At AA320 with CPU targets it recovers \HeunFourRecovered{} clean sources, with forward RMS \HeunFourFlow{} and \HeunFourWork{} mean iterative calls. Supplements~E and F give the complete controls and their budgets.
+A failure of one inverse procedure could reflect the optimizer rather than the map. \Cref{fig:controls} therefore continues from the Anderson iterate with L-BFGS or inexact Newton--GMRES, charging every forward and backward traversal against the same ceilings of 80, 160 and 320. Heun1 fails on about three quarters of the sources under all three procedures and all three ceilings, while DPM++2S and Euler2 fail on none and Heun2 on at most two. Warm-started L-BFGS and Newton--GMRES at the 320-traversal ceiling retain the large Heun1 gap and introduce a few Heun2 misses. A contiguous 20\,s Anderson allocation including initialization also retains the gap. The native strong-Wolfe L-BFGS diagnostic still has \NativeHeunFailure{} clean Heun1 failures on the first eight reused indices, at a mean of \NativeHeunWork{} charged traversals under an unequal-work protocol. The interval matters as well. On the shorter $2\to1/2$ interval of an earlier GPU experiment, all five maps recovered all 64 sources in both target arms under a ceiling of 80 \emph{map evaluations}, which gives unequal denoiser work across maps. Finally, the geometric Heun4 schedule that meets the half-ratio criterion recovers \HeunFourRecovered{} clean sources at AA320 with CPU targets, with forward RMS \HeunFourFlow{} and \HeunFourWork{} mean iterative calls. Supplements~E and F give the complete controls and their budgets.
 
-\paragraph{What the solver comparison identifies.}
-At $2\to1/8$, Heun1 uses $(w_1,w_2)=(-6.5625,7.5)$ and evaluates the second prediction at $\sigma=0.125$. DPM++2S uses $(0,0.9375)$ and evaluates it at $\sigma=0.5$. The Heun stage also retains less of the input ($q=1/16$ versus $1/4$). The comparison measures two complete maps under a shared inversion protocol. The coefficient values, cancellation between predictions, stage inputs and second evaluation scale change together. Supplement~G reports the full fixed-stage sweep, which varies the weights while holding the stage fixed.
-
-A small residual can coexist with a large source error. On clean primary Heun1, \PrimaryHeunOneLowResidual{} misses at AA320 fall below the residual stop. For each such pair, with CPU map $F_{\mathrm{CPU}}$ and saved GPU target $y$, the triangle inequality gives
+\paragraph{Small residuals with large source errors.}
+A numerical inverse can stop at a point that fits the target well but is far from the source. On clean primary Heun1, \PrimaryHeunOneLowResidual{} misses at AA320 fall below the residual stop. For each such pair, with CPU map $F_{\mathrm{CPU}}$ and saved GPU target $y$, the triangle inequality bounds how far the CPU map separates the estimate from the true source,
 \begin{equation}
- \rms(F_{\mathrm{CPU}}(\widehat x)-F_{\mathrm{CPU}}(x))
- \le e_y+\rms(y-F_{\mathrm{CPU}}(x)).
+ \begin{aligned}
+ &\rms\bigl(F_{\mathrm{CPU}}(\widehat x)-F_{\mathrm{CPU}}(x)\bigr)\\
+ &\qquad\le e_y+\rms\bigl(y-F_{\mathrm{CPU}}(x)\bigr).
+ \end{aligned}
  \label{eq:secant}
 \end{equation}
-Dividing this upper bound by $e_x$ gives at most \PrimarySecantUpper{} on those pairs. The pairs exhibit strong compression over finite displacements and are compatible with a poorly conditioned inverse. The CPU-target replay agrees on all \PrecisionFlags{} recovery flags at 160 forwards across the three checked maps. These controls measure recovery and compression at finite precision. The exact multiplicity evidence is the analytic witness in \cref{fig:collision}.
+Dividing this upper bound by $e_x$ gives a ratio of at most \PrimarySecantUpper{} on those pairs: the map compresses a source displacement of at least $0.02$ RMS to an output change more than four orders of magnitude smaller. Such finite-displacement compression is compatible with a poorly conditioned inverse. The CPU-target replay agrees on all \PrecisionFlags{} recovery flags at 160 forwards across the three checked maps, so the effect is not caused by the device change. These controls measure recovery and compression at finite precision. The exact multiplicity evidence remains the analytic witness in \cref{fig:collision}.

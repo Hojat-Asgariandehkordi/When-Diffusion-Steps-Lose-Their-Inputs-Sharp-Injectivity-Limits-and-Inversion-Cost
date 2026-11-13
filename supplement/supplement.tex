@@ -29,7 +29,8 @@
 \hyperref[sec:diagnostics]{F. Diagnostics}\\
 \hyperref[sec:controlled]{G. Controlled family ablation}
 \enspace\textperiodcentered\enspace
-\hyperref[sec:replay]{H. Reproduction and evidence scope}
+\hyperref[sec:replay]{H. Reproduction and evidence scope}\\
+\hyperref[sec:contracts]{I. Reversal contracts}
 
 \section{Full proof and conditioning}
 \label{sec:proof}
@@ -343,6 +344,30 @@ The evidence archive regenerates summaries and plots offline from saved traces a
 
 The two-image example uses CIFAR-10 arrays and a specified exact prior. The learned experiments use public checkpoints and numerical states, with no new physical acquisitions, training or recruited participants. Source error and reference fidelity are pixel-coordinate RMS for the numerical task. Our study leaves perceptual image quality, editing behavior and demographic claims outside its evaluation. The measured finite-budget failures cannot determine whether a learned map has multiple preimages.
 
+
+\FloatBarrier
+\section{Reversal contracts of related methods}
+\label{sec:contracts}
+\Cref{tab:related} compares the assumptions, the retained state and the guarantee of the reversal approaches discussed in Sec.~2 of the main paper. A single-state inverse has one saved output and the known map, whereas paired recurrences retain two states.
+
+\begin{table}[htbp]
+\centering\small
+\setlength{\tabcolsep}{4pt}
+\begin{tabular}{@{}Q{.175\textwidth}Q{.179\textwidth}Q{.143\textwidth}Q{.208\textwidth}Q{.222\textwidth}@{}}
+\toprule
+Forward map & Assumptions & Extra state for reversal & Guarantee or target & Consequence for inversion\\
+\midrule
+DDIM~\cite{verbii2026} & Exact one-prediction score & None & Strongly convex inverse objective & One source with separate iteration conditions\\
+Executed DPM maps~\cite{hong2024} & Known solver and model, convergence conditions & History enters multistep equations & Inverse residual formulation and convergence analysis & Search for a preimage of the executed map\\
+EDICT, BDIA, BELM~\cite{wallace2023,zhang2024,wang2024} & Designed coupling or bidirectional recurrence & Coupled or adjacent state & Algebraic reversibility on the retained state & Recover by applying the inverse recurrence\\
+Rex~\cite{rex2026} & Exponential integrator with reversible coupling & Coupled state, matched randomness for SDEs & Algebraic reversibility of the coupled map & Reversible counterpart to base steps including 2S\\
+EES in diffusion~\cite{barancikova2026} & Designed explicit method on smooth trajectories & None for the EES step & High-order round-trip error as step size shrinks & Approximate reversal and stability for editing\\
+Ordinary two-stage map (this work) & One exact compact prior, fixed coefficients and positive scales & None & Universal smooth invertibility iff both weights are nonnegative & Actual collisions outside the universal region for a fixed prior\\
+\bottomrule
+\end{tabular}
+\caption{Reversal contracts for deterministic steps. The single-state inverse has one saved output and the known map. Paired recurrences apply to both retained states.}
+\label{tab:related}
+\end{table}
 \FloatBarrier
 \section*{LLM Usage Statement}
 The main paper's LLM Usage Statement covers the study and this supplement.

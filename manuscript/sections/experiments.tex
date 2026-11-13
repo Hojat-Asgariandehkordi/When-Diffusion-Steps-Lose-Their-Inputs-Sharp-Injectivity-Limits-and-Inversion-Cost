@@ -1,44 +1,36 @@
 \section{Inverting learned diffusion steps}
 \label{sec:experiment}
-\begin{figure*}[t]
-\centering
-\includegraphics[width=\textwidth]{../figures/tradeoff.pdf}
-\caption{\textbf{Two FFHQ64 choices recover the same clean sources.}
-DPM++2S uses fewer inverse calls and Heun2 gives lower forward RMS. Marker labels give clean recovery counts. The two linked points also give mean iterative forwards and forward RMS. Bars show 95\% seed-bootstrap intervals for mean forward RMS against Heun128. The panels share axes but use the indicated cohort-specific ceilings. The reused primary panel has saved GPU targets and a CPU inverse. The separately frozen FFHQ64 and VE panels use CPU targets and inverses. \Cref{tab:recovery} includes noisy targets and the other primary maps.}
-\label{fig:tradeoff}
-\end{figure*}
-
-\begin{table*}[t]
+\begin{table}[t]
 \centering\small
-\setlength{\tabcolsep}{7pt}
+\setlength{\tabcolsep}{3.2pt}
 \begin{tabular}{@{}lrrrrr@{}}
 \toprule
-Step map & Calls per map & Clean recovered & Noisy recovered & Mean $e_{\rm flow}$ & Mean clean $N_f$\\
+Step map & Calls & Clean & Noisy & $e_{\rm flow}$ & $N_f$\\
 \midrule
-\multicolumn{6}{@{}l}{\textbf{FFHQ64 VP} \enspace \FFHQN{} separately frozen sources, \FFHQCap{} forwards, CPU targets}\\
+\multicolumn{6}{@{}l}{\textbf{FFHQ64 VP}, $N=\FFHQN$, ceiling \FFHQCap{}}\\
 \tablerows{generated/ffhq_rows_labeled}
 \midrule
-\multicolumn{6}{@{}l}{\textbf{CIFAR-10 VP} \enspace \PrimaryN{} reused sources, \PrimaryCap{} forwards, saved GPU targets}\\
+\multicolumn{6}{@{}l}{\textbf{CIFAR-10 VP}, $N=\PrimaryN$, ceiling \PrimaryCap{}}\\
 \tablerows{generated/primary_rows_labeled}
 \midrule
-\multicolumn{6}{@{}l}{\textbf{CIFAR-10 VE} \enspace \VEN{} separately frozen sources, \FFHQCap{} forwards, CPU targets}\\
+\multicolumn{6}{@{}l}{\textbf{CIFAR-10 VE}, $N=\VEN$, ceiling \FFHQCap{}}\\
 \tablerows{generated/ve_rows_labeled}
 \bottomrule
 \end{tabular}
-\caption{\textbf{Anderson recovery at each cohort's registered ceiling.}
-Recovery requires source RMS $e_x\le0.02$. $N_f$ counts iterative denoiser forwards. Each inverse has two initializer calls, with final diagnostics also accounted for separately. The forward reference is Heun128 on the target-generation device. Supplement~E reports source errors, residuals and hybrid work.}
+\caption{\textbf{Anderson recovery at each cohort's ceiling.} Clean and Noisy give recovered sources ($e_x\le0.02$). $e_{\rm flow}$ is mean forward RMS against Heun128 (lower is better). $N_f$ is mean iterative denoiser forwards on clean targets. Calls are denoiser calls per step map.}
 \label{tab:recovery}
-\end{table*}
+\end{table}
 
-We now treat the denoisers as fixed neural networks. The inverse sees $y=F(x)+\eta$, the operator $F$ and its schedule. It starts at a two-step reverse Euler estimate computed from $y$. Source truth, the seed, intermediate states and the clean version of a noisy target are held by the evaluator. With $\rms(v)=\|v\|_2/\sqrt d$ over the $d$ image coordinates, we measure
-\begin{equation}
- \begin{aligned}
- e_x&=\rms(\widehat x-x),& e_y&=\rms(F(\widehat x)-y),\\
- e_{\rm flow}&=\rms(F(x)-F_{\rm ref}(x)).&&
- \end{aligned}
+We now replace the exact posterior mean by a pretrained denoising network, so $F$ denotes a learned step map with a known schedule. The question is whether the guarantee, or its absence, is visible when a numerical inverse must recover a source from a saved output under a fixed budget, and what each step costs in inverse work and in forward accuracy.
+
+\paragraph{Observation model and metrics.}
+For a source state $x$ the inverse receives the target $y=F(x)+\eta$, where $\eta=0$ for clean targets and $\eta$ is Gaussian with coordinate standard deviation $10^{-3}$ for noisy targets, paired across maps at each source. It also receives $F$ and its schedule, but not $x$, the seed or any intermediate state, which only the evaluator holds. The inverse starts from a two-step reverse Euler estimate computed from $y$ and returns an estimate $\widehat x$. With $\rms(v)=\|v\|_2/\sqrt d$ over the $d$ image coordinates, we measure the source error, the target residual and the forward error against a fine reference trajectory $F_{\rm ref}$ (Heun128 on the same network and interval),
+\begin{align}
+ e_x&=\rms(\widehat x-x),\qquad e_y=\rms(F(\widehat x)-y),\nonumber\\
+ e_{\rm flow}&=\rms(F(x)-F_{\rm ref}(x)).
  \label{eq:metrics}
-\end{equation}
-A recovery has $e_x\le0.02$. The inverse selects by $e_y$, using a residual stopping tolerance of $2\times10^{-6}$. Clean targets have $\eta=0$. Noisy targets use Gaussian noise with coordinate standard deviation $10^{-3}$, paired across maps at each source.
+\end{align}
+A source counts as recovered when $e_x\le0.02$. The inverse never sees $e_x$. It selects its output by $e_y$ and stops when $e_y<2\times10^{-6}$.
 
 \paragraph{Sources and maps.}
 We use the public unconditional EDM CIFAR-10 VP, CIFAR-10 VE and FFHQ64 VP checkpoints~\cite{karras2022,cifar2009,karras2019}. Each source is the state at sigma 2 after Heun64 from sigma 80, initialized with $80$ times a seeded standard Gaussian array. The test interval is $2\to1/8$. We compare two Euler steps, one Heun step, one sigma-midpoint step, one DPM++2S step, and two Heun steps. Two-step grids use EDM's fixed sigma-power schedule with exponent 7. A repeated primary diagnostic also uses the geometric Heun4 grid from \cref{cor:schedule}. The numerical forward reference is Heun128 on the same network and interval. We report its disagreement with Heun64 as a refinement check.
@@ -47,7 +39,7 @@ We use the public unconditional EDM CIFAR-10 VP, CIFAR-10 VE and FFHQ64 VP check
 The primary \PrimaryN{} CIFAR-VP sources were already observed before the frozen comparison. Their saved targets are from GPU execution and their inverses run on CPU. The fresh \VEN{} CIFAR-VE and \FFHQN{} FFHQ64-VP seeds were frozen separately after disjoint development runs. Their targets and inverses use the same CPU operator. Outer states are float64 and denoisers evaluate in float32. A clean CPU-target replay on the reused primary cohort isolates the effect of the device change. Each inverse runs on one image at a time. The independently seeded source is the unit of analysis. All method, noise and budget comparisons within a cohort are paired by seed.
 
 \paragraph{Inverses and work.}
-Anderson acceleration (AA)~\cite{walker2011} extrapolates the target-residual fixed-point map with memory five and damping $0.8$. Two primary controls start from the observed AA iterate available within 80 forwards and continue with L-BFGS~\cite{liu1989} or inexact Newton--GMRES~\cite{saad1986}. The L-BFGS control charges line searches and gradient traversals. Newton--GMRES charges centered finite-difference Jacobian actions, line searches and unfinished work. Primary ceilings are 80, 160 and \PrimaryCap{} iterative denoiser traversals. Each charges forward and backward traversals, including the shared AA warm work for each hybrid. The fresh cohorts use AA with a ceiling of \FFHQCap{} forwards. A forward pass through the \emph{step map} can call the denoiser more than once. We report these calls per map separately from the inverse's actual iterative work, and itemize initialization and final diagnostics in the supplement.
+A preimage of $y$ is a fixed point of $g(z)=z+y-F(z)$. Anderson acceleration (AA)~\cite{walker2011} extrapolates this fixed-point map from its five most recent iterates, with damping $0.8$, and keeps the iterate with the smallest residual. Two primary controls start from the observed AA iterate available within 80 forwards and continue with L-BFGS~\cite{liu1989} or inexact Newton--GMRES~\cite{saad1986}. The L-BFGS control charges line searches and gradient traversals. Newton--GMRES charges centered finite-difference Jacobian actions, line searches and unfinished work. Primary ceilings are 80, 160 and \PrimaryCap{} iterative denoiser traversals. Each charges forward and backward traversals, including the shared AA warm work for each hybrid. The fresh cohorts use AA with a ceiling of \FFHQCap{} forwards. A forward pass through the \emph{step map} can call the denoiser more than once. We report these calls per map separately from the inverse's actual iterative work, and itemize initialization and final diagnostics in the supplement.
 
 \paragraph{Uncertainty.}
 Failure intervals use two-sided exact binomial limits. Mean and paired-difference intervals use 10,000 bootstrap draws of source seeds, with the same resampled indices on both sides of a contrast. Cohorts are summarized separately.

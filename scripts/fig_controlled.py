@@ -1,44 +1,51 @@
-"""Supplement: fixed-stage weight sweep (source RMS and iterative work vs w1)."""
+"""Fig. 3 (one column): fixed-stage weight sweep. w2 = 15/16 - w1, stage held fixed.
+(a) source error, (b) inverse work, (c) forward fidelity, (d) smallest random directional gain."""
 import matplotlib.pyplot as plt
+from matplotlib.lines import Line2D
 import style, data
 from common import save
 
 style.apply()
 C = style.COL
-cols = {r"$2\to1/8$": (C["DPM++2S"], "s", -0.09), r"$1\to1/16$": (C["Heun2"], "^", 0.09)}
+IV = {r"$2\to1/8$": ("#2B2F33", "s", -0.1), r"$1\to1/16$": ("#8A949D", "^", 0.1)}
 xs = list(range(len(data.SWEEP_W1)))
-labels = ["$-6.5625$", "$-0.5$", "$-0.125$", "$0$", "$0.125$", "$0.5$"]
-fig, (a1, a2) = plt.subplots(1, 2, figsize=(style.TEXTWIDTH_SUPP, 2.15), gridspec_kw=dict(wspace=0.28))
-for ax in (a1, a2):
+xl = ["$-6.56$", "$-1/2$", "$-1/8$", "$0$", "$1/8$", "$1/2$"]
+fig, axs = plt.subplots(2, 2, figsize=(style.COLWIDTH, 2.95), sharex=True)
+fig.subplots_adjust(left=0.13, right=0.985, top=0.86, bottom=0.12, wspace=0.42, hspace=0.36)
+(a, b), (c, d) = axs
+panels = [
+    (a, lambda i, k: data.SWEEP[k][i][1], r"source RMS $e_x$", True),
+    (b, lambda i, k: data.SWEEP[k][i][2], r"inverse forwards $N_f$", False),
+    (c, lambda i, k: data.SWEEP_EXTRA[k][i][0], r"forward RMS $e_{\rm flow}$", True),
+    (d, lambda i, k: data.SWEEP_EXTRA[k][i][1], r"min. gain $g_{\rm rand}$", False),
+]
+for (ax, get, lab, logy), tag in zip(panels, "abcd"):
     ax.axvspan(-0.5, 2.5, color="#F6E9E3", lw=0, zorder=0)
     ax.axvline(3, color=C["ref"], lw=0.6, zorder=1)
-    ax.set_xticks(xs, labels); ax.set_xlim(-0.5, 5.5)
-    ax.set_xlabel(r"First prediction weight $w_1$ (categorical axis)")
-    ax.text(0.04, 0.03 if ax is a2 else 0.04, r"$w_1<0$", transform=ax.transAxes, color=C["Heun1"], fontsize=7.5)
-for name, rows in data.SWEEP.items():
-    col, mk, dx = cols[name]
-    a1.plot([x + dx for x in xs], [r[1] for r in rows], marker=mk, color=col, lw=1.0, ms=4.2, mec="white",
-            mew=0.4, label=name, zorder=3)
-    a2.plot([x + dx for x in xs], [r[2] for r in rows], marker=mk, color=col, lw=1.0, ms=4.2, mec="white",
-            mew=0.4, label=name, zorder=3)
+    for k, (col, mk, dx) in IV.items():
+        ax.plot([x + dx for x in xs], [get(i, k) for i in xs], marker=mk, color=col, lw=0.9, ms=3.4,
+                mec="white", mew=0.4, zorder=3)
+    if logy:
+        ax.set_yscale("log")
+    ax.set_ylabel(lab, labelpad=1)
+    ax.text(-0.3, 1.04, f"({tag})", transform=ax.transAxes, fontsize=8.8, fontweight="bold", va="bottom")
+    ax.set_xticks(xs, xl, rotation=45, fontsize=7.6)
+    ax.tick_params(axis="y", labelsize=7.8)
+    ax.set_xlim(-0.5, 5.5)
+a.set_ylim(1e-5, 3); a.axhline(data.RECOVERY_THRESHOLD, color=C["ref"], lw=0.7, ls=(0, (3, 2)))
+a.minorticks_off(); a.set_yticks([1e-5, 1e-3, 1e-1])
+b.axhline(160, color=C["ref"], lw=0.7, ls=(0, (3, 2))); b.set_ylim(0, 175); b.set_yticks([0, 80, 160])
+c.minorticks_off(); c.set_ylim(0.02, 0.25); c.set_yticks([0.02, 0.05, 0.1, 0.2]); c.set_yticklabels(["0.02", "0.05", "0.1", "0.2"])
+d.set_ylim(0.05, 0.28)
+# recovered counts as an axis strip above panel (a), outside the data region
 rec = [r[0] for r in data.SWEEP[r"$2\to1/8$"]]
-assert rec == [r[0] for r in data.SWEEP[r"$1\to1/16$"]]
 for x, k in zip(xs, rec):
-    y = 1.6 if k == 0 else 2.2e-4
-    a1.text(x, y, f"{k}/{data.SWEEP_N}", ha="center", va="bottom", fontsize=7,
-            color=C["Heun1"] if k == 0 else C["muted"])
-a1.set_yscale("log"); a1.set_ylim(1e-5, 8)
-a1.axhline(data.RECOVERY_THRESHOLD, color=C["ref"], lw=0.7, ls=(0, (4, 2)))
-a1.text(5.45, data.RECOVERY_THRESHOLD * 1.25, r"recovery threshold $e_x=0.02$", ha="right", va="bottom",
-        fontsize=7, color=C["muted"])
-a1.set_ylabel(r"Mean source RMS $e_x$")
-a1.set_title("Source error (labels: recovered / 12)", loc="left", fontweight="bold", pad=3)
-a2.axhline(160, color=C["ref"], lw=0.7, ls=(0, (4, 2)))
-a2.text(5.45, 162, "160-forward ceiling", ha="right", va="bottom", fontsize=7, color=C["muted"])
-a2.set_ylim(0, 180); a2.set_ylabel(r"Mean iterative forwards $N_f$")
-a2.set_title("Inverse work", loc="left", fontweight="bold", pad=3)
-fig.subplots_adjust(bottom=0.3, top=0.9)
-h, l = a1.get_legend_handles_labels()
-fig.legend(h, ["Noise interval " + x for x in l], loc="lower center", ncol=2, bbox_to_anchor=(0.5, -0.01),
-           columnspacing=2.5)
+    a.text(x, 1.02, f"{k}", transform=a.get_xaxis_transform(), ha="center", va="bottom", fontsize=7.5,
+           color=C["Heun1"] if k == 0 else C["muted"])
+for ax in (c, d):
+    ax.set_xlabel(r"first weight $w_1$", labelpad=1)
+h = [Line2D([], [], color=col, marker=mk, ms=3.6, lw=0.9, mec="white", mew=0.4, label=k)
+     for k, (col, mk, _) in IV.items()]
+fig.legend(handles=h, loc="upper center", ncol=2, bbox_to_anchor=(0.55, 1.0), columnspacing=1.5,
+           fontsize=8, title=None)
 save(fig, "controlled")
