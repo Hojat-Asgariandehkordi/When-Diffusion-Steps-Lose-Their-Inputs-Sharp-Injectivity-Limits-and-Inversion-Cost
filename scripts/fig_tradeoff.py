@@ -9,7 +9,7 @@ C = style.COL
 fig, axes = plt.subplots(1, 3, figsize=(style.TEXTWIDTH_MAIN, 2.25), sharey=True,
                          gridspec_kw=dict(wspace=0.12))
 offsets = {  # label placement (dx points, dy points, ha)
-    "Heun1": (6, 2, "left"), "DPM++2S": (6, 3, "left"), "Heun2": (7, -5, "left")}
+    "Heun1": (6, 2, "left"), "DPM++2S": (6, 3, "left"), "Heun2": (6, -2, "left")}
 for ax, (name, d) in zip(axes, data.TRADEOFF.items()):
     rows = d["rows"]
     ax.axvline(d["cap"], color=C["ref"], lw=0.8, ls=(0, (3, 2)), zorder=1)
@@ -20,8 +20,8 @@ for ax, (name, d) in zip(axes, data.TRADEOFF.items()):
         (x1, y1, *_), (x2, y2, *_) = rows["DPM++2S"], rows["Heun2"]
         ax.plot([x1, x2], [y1, y2], color="#9DB7C4", lw=1.0, zorder=2)
     for m, (nf, flow, (lo, hi), rec) in rows.items():
-        ax.errorbar(nf, flow, yerr=[[flow - lo], [hi - flow]], fmt=style.MARK[m], color=C[m], ms=4.2,
-                    mec="white", mew=0.5, elinewidth=0.9, capsize=3.0, capthick=0.9, zorder=4)
+        ax.errorbar(nf, flow, yerr=[[flow - lo], [hi - flow]], fmt=style.MARK[m], color=C[m], ms=5.2,
+                    mec="white", mew=0.5, elinewidth=0.9, capsize=2.2, capthick=0.9, zorder=4)
         dx, dy, ha = offsets[m]
         lab = rec
         if name == "FFHQ64 VP" and m != "Heun1":

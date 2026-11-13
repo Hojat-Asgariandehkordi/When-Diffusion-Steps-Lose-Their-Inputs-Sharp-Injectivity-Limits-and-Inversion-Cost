@@ -18,7 +18,7 @@ COL = {
 }
 MARK = {"Heun1": "o", "DPM++2S": "s", "Heun2": "^", "Midpoint1": "v", "Euler2": "D"}
 # Input states A, B, C in Fig. 1
-ABC = {"A": "#7B3F9E", "B": "#4F5B66", "C": "#9A6A12"}
+ABC = {"A": "#7B3F9E", "B": "#1C7C74", "C": "#9A6A12"}
 
 
 def apply():
