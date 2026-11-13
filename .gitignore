@@ -9,3 +9,5 @@ build/
 *.synctex.gz
 *.npz
 __pycache__/
+build_previews/
+scripts/fonts/
