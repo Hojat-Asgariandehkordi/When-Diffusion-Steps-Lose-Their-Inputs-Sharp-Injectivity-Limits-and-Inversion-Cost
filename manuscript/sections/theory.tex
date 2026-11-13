@@ -1,0 +1,43 @@
+\section{When the step preserves its input}
+\label{sec:theory}
+Let $X$ have compactly supported law $\pi$ on $\R^d$ and let $Z\sim\mathcal N(0,I)$ be independent. Write $D_s(x)=\E[X\mid X+sZ=x]$ for the Gaussian posterior mean at $s>0$, using its smooth convolution formula also for atomic priors. Fix $r>0$, $0<q<1$, $\kappa>0$, and real weights with $r+w_1+w_2=1$. At source noise $a>0$ define
+\begin{align}
+ p_a(x)&=qx+(1-q)D_a(x),\nonumber\\
+ F_a(x)&=rx+w_1D_a(x)+w_2D_{\kappa a}(p_a(x)).
+ \label{eq:family}
+\end{align}
+The same prior supplies both posterior means. The first prediction moves the input to the second, even when its own output weight $w_1$ is zero.
+
+\begin{theorem}[Universal invertibility]
+\label{thm:sharp}
+With these coefficients fixed, $F_a$ is a global orientation-preserving smooth diffeomorphism for every dimension, compact prior and positive source scale $a$ if and only if $w_1,w_2\ge0$. If either weight is negative, the fixed prior $(\delta_{-1}+\delta_{+1})/2$ has an open interval of outputs with at least three preimages each for every sufficiently small $a>0$.
+\end{theorem}
+
+\paragraph{Nonnegative weights preserve the input.}
+Differentiating the Gaussian posterior mean gives
+\begin{equation}
+ \nabla D_s(x)=s^{-2}\Cov(X\mid X+sZ=x)\succeq0.
+ \label{eq:covariance}
+\end{equation}
+Thus $D_s$ is a convex gradient~\cite{gribonval2021}, bounded by compactness of the support. Write $A=\nabla D_a(x)$, $B=\nabla D_{\kappa a}(p_a(x))$, and $E=qI+(1-q)A$. The product $BE$ in the step Jacobian $J$ can be nonsymmetric. The positive definite $E$ commutes with $A$, so a similarity transform gives
+\begin{equation}
+ E^{1/2}JE^{-1/2}
+ =rI+w_1A+w_2E^{1/2}BE^{1/2}\succeq rI .
+ \label{eq:similarity}
+\end{equation}
+This gives a local inverse and positive determinant. In Euclidean norm, $\|J^{-1}\|_2\le\sqrt{\operatorname{cond}_2(E)}/r$.
+
+For two inputs, average $\nabla D_a$ along the segment between them and average $\nabla D_{\kappa a}$ along the separate segment between their stage states. Their exact finite difference has the same matrix form as $J$ with these positive semidefinite averages. The matrix is invertible, so distinct inputs have distinct outputs. Since the predictions are bounded, $F_a(x)=rx+O(1)$ is proper. Its image is open by local invertibility and closed by properness, hence it is all of $\R^d$. Supplement~A gives the global inverse bound and a convex-gradient factorization.
+
+\paragraph{A negative weight can fold the map.}
+For the two equally weighted atoms, $D_s(x)=\tanh(x/s^2)$. The posterior derivative is steep near its transition at zero and small away from it. If $w_2<0$, evaluating at zero puts both posteriors at their transitions. The product of their derivatives dominates the slope:
+\begin{equation}
+ \lim_{a\downarrow0}a^4 F'_a(0)=w_2(1-q)/\kappa^2<0.
+\end{equation}
+If $w_2\ge0$ and $w_1<0$, evaluate at $x=a^2$. The first derivative is $a^{-2}\operatorname{sech}^2(1)$, while the stage stays above $(1-q)\tanh(1)>0$. The second posterior saturates, making its derivative exponentially small. Hence
+\begin{equation}
+ \lim_{a\downarrow0}a^2 F'_a(a^2)=w_1\operatorname{sech}^2(1)<0.
+\end{equation}
+The prior stays fixed in both limits. At fixed $a$, the slope tends to $r>0$ in the tails and the outputs go to opposite infinities. Take a short decreasing segment $[u,v]$. Each output strictly between $F_a(v)$ and $F_a(u)$ is attained inside the segment, to its left and to its right. This gives three distinct preimages by continuity.
+
+The necessity is universal over priors and scales. A particular map can remain injective with a negative weight, as for a point-mass prior where the step has constant slope $r$. The converse uses $q<1$. At $q=1$ nonnegative weights still suffice by the symmetric Jacobian. At the coincident-scale boundary $q=1,\kappa=1$ the predictions coincide and the exact criterion becomes $w_1+w_2\ge0$.

@@ -1,0 +1,25 @@
+\usepackage{graphicx,amsmath,amssymb,amsthm,booktabs,array,multirow,xcolor}
+\usepackage{microtype}
+\definecolor{linkblue}{rgb}{.0,.35,.55}
+\usepackage[pagebackref,breaklinks,colorlinks,allcolors=linkblue]{hyperref}
+\newtheorem{theorem}{Theorem}
+\newtheorem{lemma}{Lemma}
+\newtheorem{corollary}{Corollary}
+\newtheorem{remark}{Remark}
+\newcommand{\R}{\mathbb R}
+\newcommand{\E}{\mathbb E}
+\newcommand{\Cov}{\operatorname{Cov}}
+\newcommand{\cond}{\operatorname{cond}}
+\newcommand{\rms}{\operatorname{RMS}}
+\newcommand{\DPM}{DPM-Solver++(2S)}
+\usepackage[capitalize]{cleveref}
+\crefname{theorem}{theorem}{theorems}
+\Crefname{theorem}{Theorem}{Theorems}
+\hypersetup{pdftitle={When Diffusion Steps Lose Their Inputs: Sharp Injectivity Limits and Inversion Cost},pdfauthor={Anonymous Authors}}
+
+% Expand the row fragment before a booktabs rule begins the next alignment row.
+\makeatletter
+\newcommand{\tablerows}[1]{\@@input{#1}}
+\makeatother
+
+\newcolumntype{Q}[1]{>{\raggedright\arraybackslash}p{#1}}

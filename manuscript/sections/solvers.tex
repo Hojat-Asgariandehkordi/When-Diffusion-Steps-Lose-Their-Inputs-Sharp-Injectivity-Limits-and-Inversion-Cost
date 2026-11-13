@@ -1,0 +1,39 @@
+\section{What the criterion says about schedules}
+\label{sec:solvers}
+In additive noise coordinates the probability-flow drift is $f(x,s)=(x-D_s(x))/s$~\cite{karras2022}. Write $\rho=b/a\in(0,1)$ for the denoising ratio. Euler's update is $\rho x+(1-\rho)D_a(x)$, a strongly monotone map with lower slope bound $\rho$ and one denoiser call. The two-evaluation methods in \cref{tab:coeff} have the same residual coefficient $r=\rho$ and differ in how they combine predictions.
+
+For \textbf{sigma-Heun}, the Euler predictor at $b$ is $p_a=\rho x+(1-\rho)D_a(x)$. Substituting it into the trapezoidal update $x+(b-a)[f(x,a)+f(p_a,b)]/2$ produces $w_1$ with the factor $2\rho-1$. The step is universally injective exactly for $\rho\ge1/2$.
+For \textbf{explicit sigma-midpoint}, the stage is an Euler step to $(a+b)/2$. Inserting this stage into the midpoint drift gives a negative $w_1$ for every strict denoising ratio.
+For \textbf{unthresholded log-SNR midpoint DPM++2S}, the intermediate noise is $\sqrt{ab}$ and the final update uses only the prediction there~\cite{lu2022}. Thus $w_1=0$ and $w_2=1-\rho$. All strict positive denoising ratios satisfy the sign test. Supplement~B derives the three formulas in the same coordinates. When $b=a$, each of these solver steps is the identity.
+
+\begin{table}[t]
+\centering\small
+\setlength{\tabcolsep}{3.5pt}
+\begin{tabular}{@{}lccc@{}}
+\toprule
+Step & $q=\kappa$ & $w_1$ & $w_2$\\
+\midrule
+Heun & $\rho$ & $\dfrac{(1-\rho)(2\rho-1)}{2\rho}$ & $\dfrac{1-\rho}{2\rho}$\\[7pt]
+Sigma-midpoint & $\dfrac{1+\rho}{2}$ & $-\dfrac{(1-\rho)^2}{1+\rho}$ & $\dfrac{2(1-\rho)}{1+\rho}$\\[7pt]
+DPM++2S & $\sqrt{\rho}$ & $0$ & $1-\rho$\\
+\bottomrule
+\end{tabular}
+\caption{Prediction weights in \cref{eq:family}, with $r=\rho=b/a\in(0,1)$. The sign condition applies to the specified ordinary steps with exact posterior means.}
+\label{tab:coeff}
+\end{table}
+
+\begin{corollary}[Fixed Heun schedules]
+\label{cor:schedule}
+Fix the ratios $\rho_j\in(0,1]$ of an input-independent denoising schedule. The standard sigma-Heun composition is a global orientation-preserving smooth diffeomorphism for every dimension, common compact prior and positive global scale exactly when every $\rho_j\ge1/2$. For overall $0<b<a$, the minimum length of a schedule with this guarantee is
+\begin{equation}
+ n_{\min}=\big\lceil\log_2(a/b)\big\rceil.
+ \label{eq:nmin}
+\end{equation}
+\end{corollary}
+\begin{proof}
+When all ratios meet the threshold, the composition inherits the guarantee. Otherwise use the \emph{first} ratio below $1/2$. With the fixed two-atom prior, reducing the global scale makes that step's source noise small enough to produce a collision. The preceding steps are onto, so two distinct initial states reach the two colliding inputs. Every later deterministic step acts on their equal state and preserves the collision.
+
+The product of $n$ ratios each at least $1/2$ is at least $2^{-n}$. Conversely, $n$ equal ratios $(b/a)^{1/n}$ meet the threshold whenever $n\ge\lceil\log_2(a/b)\rceil$.
+\end{proof}
+
+At $2\to1/8$, the grid $2,1,1/2,1/4,1/8$ uses the minimum four Heun substeps and eight denoiser calls. One DPM++2S step has the universal guarantee with two calls. Euler illustrates the separate role of forward fidelity even with a one-call guarantee. The Heun limit is a structural budget for the specified family of schedules. Numerical accuracy and the work of solving for a source must be measured separately.

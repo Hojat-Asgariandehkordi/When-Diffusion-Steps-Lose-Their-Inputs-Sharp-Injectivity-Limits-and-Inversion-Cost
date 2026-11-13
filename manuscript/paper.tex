@@ -1,0 +1,34 @@
+\documentclass[10pt,twocolumn,letterpaper]{article}
+\usepackage[review]{cvpr}
+\input{preamble}
+\input{generated/numbers}
+\input{generated/round2_numbers}
+\def\confName{CVPR}\def\confYear{2027}
+\title{When Diffusion Steps Lose Their Inputs:\\Sharp Injectivity Limits and Inversion Cost}
+\author{Anonymous CVPR submission}
+
+\begin{document}
+\maketitle
+\begin{abstract}
+Which diffusion steps preserve enough information to recover their inputs from one saved output?
+For a coupled two-stage family with exact Gaussian posterior means of one compact prior, nonnegative prediction weights characterize global smooth invertibility for every dimension, prior and positive source noise.
+If either weight is negative, a fixed two-atom prior produces three distinct inputs for the same output at sufficiently small source noise.
+Standard sigma-Heun therefore needs a noise ratio of at least $1/2$ at every substep to guarantee inversion universally. The shortest such fixed schedule from $a$ to $0<b<a$ takes $\lceil\log_2(a/b)\rceil$ steps.
+On a separately frozen FFHQ64 panel over $2\to1/8$, one-step DPM++2S and two-step Heun each recovered \FFHQDPMRecovered{} clean sources under a \FFHQCap{}-forward Anderson ceiling. DPM++2S used \FFHQDPMWork{} mean iterative forwards with forward RMS \FFHQDPMFlow{} against Heun128, and two-step Heun used \FFHQHeunTwoWork{} with RMS \FFHQHeunTwoFlow{}. One-step Heun recovered \FFHQHeunOneRecovered{}.
+\end{abstract}
+\input{sections/intro}
+\input{sections/theory}
+\input{sections/solvers}
+\input{sections/related}
+\input{sections/experiments}
+\input{sections/results}
+\input{sections/choice}
+\label{mainend}
+\clearpage
+
+\section*{LLM Usage Statement}
+OpenAI Codex assisted extensively with literature retrieval and synthesis, mathematical derivation and checking, implementation and execution of experiments, figures from equations and saved observations, manuscript drafting and revision, and author-side technical review.
+The image tiles come from stored arrays and exact affine constructions.
+The authors are responsible for verifying and defending the work.
+{\small\bibliographystyle{ieeenat_fullname}\bibliography{references}}
+\end{document}
