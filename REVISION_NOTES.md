@@ -50,3 +50,9 @@ Open items for the authors
 - Bold: all \paragraph run-in headings removed. Theory, solvers, intro and implementation paragraphs now open with plain sentences; results paragraphs use italic leads. Table 1 cohort labels are italic. Figures keep bold only for panel letters. Theorem/Lemma/Proposition headers stay bold (amsthm).
 - Literature review: three connected paragraphs (inversion as a numerical problem; reversal by storing extra state; invertibility theory). Added verified citations: AIDI (ICCV 2023), Fixed-point inversion (arXiv 2023), ReNoise (ECCV 2024), edit-friendly DDPM inversion (CVPR 2024), invertible ResNets (ICML 2019), Neural ODEs (NeurIPS 2018), Tweedie's formula (Efron, JASA 2011). The positioning is explicit: these solvers search for a preimage of a step they did not design, while we characterize when that preimage is unique.
 - Checks: 0 overfull boxes, no undefined references, all numbers from the previous version preserved.
+
+## Pass 7 (Figure 5 to the supplement, 2026-11-14)
+- Analysis: Fig. 5 (clean failures vs ceiling for AA, AA+L-BFGS, AA+Newton-GMRES) was cited only in the results paragraph that rules out an optimizer artifact. The conclusion's "under every optimizer and ceiling we tried" stays supported by the text and Supp. Fig. 1. Not essential in the main paper.
+- Removed the main-paper float. The supplement already holds the fuller two-arm version (Supp. Sec. E, Fig. 1), which the text now cites.
+- The paragraph was rewritten with a positive lead ("Robustness to the optimizer, budget and interval. The separation is a property of the step, not of the solver.") and keeps every number. The only number that left the main text is the figure's 75% axis tick.
+- Body now ends higher on p. 9 (about 0.4 column saved). scripts/fig_controls_main.py is kept for reference but no longer used.
