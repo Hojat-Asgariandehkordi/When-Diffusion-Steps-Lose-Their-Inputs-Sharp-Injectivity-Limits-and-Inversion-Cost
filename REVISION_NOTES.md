@@ -72,3 +72,6 @@ Open items for the authors
 - Caption rewritten to match panels A–D, and the Sec. 3 references now read Fig. 1A–D. The BioRender credit was removed from the caption and the LLM statement, since this figure is not BioRender art.
 - Figure issues reported to the authors (artwork not edited): Panel D is missing the Heun2 mean inverse forwards (158.3); Panel C shows ">=[log2(a/b)]" where the paper has ⌈log₂(a/b)⌉ as the minimum; in Panel A the W1 path starts at the input instead of at D_a(x), and "q" labels the arrow into D_a; the figure uses Roboto/Calibri rather than Times; minor spacing such as "DPM ++ 2S".
 - Pass 10b: replaced Fig. 1 with the authors' revised version (Inject_1.pdf, cropped). It fixes the Panel A wiring (q into the stage, W1 from D_a), adds Heun2 158.3 in Panel D and uses Times lettering. Caption unchanged; it matches all panels.
+
+## Pass 11 (lead with the strongest results, 2026-11-14)
+- The abstract and introduction now open with the four headline results: the sign test, the Heun rule (noise ratio ≥ 1/2 per step, shortest schedule ⌈log2(a/b)⌉), the two-image example where three inputs share one output, and the 64/64 vs 5/64 recovery gap. The motivation paragraph follows. No claims or numbers changed; figures are still cited in order.
