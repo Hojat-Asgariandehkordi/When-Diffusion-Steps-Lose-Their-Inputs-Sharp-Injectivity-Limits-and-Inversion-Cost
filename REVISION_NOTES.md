@@ -37,3 +37,10 @@ Open items for the authors
 - LLM statement now also discloses Claude's role. BioRender was not used, so it is not cited.
 - Checks: 0 overfull boxes in both documents; every number in the previous text still appears; Supplement letters A–I and supplement-to-main references verified.
 - Page limit: the body runs about half a page onto p. 9 (CVPR limit: 8 pages excluding references). This is an expanded working draft.
+
+## Pass 5 (central Figure 1, 2026-11-13)
+- New Fig. 1 (figure*, full width): BioRender artwork (figure c1dd7dba802c2f9fcffffbb5, raw at scripts/assets/biorender/overview_raw.png, 2752x1536, pulled via Overleaf "From external URL") with labels typeset in Times by scripts/fig_overview_br.py from one LAYOUT table. Fixes to the art: placeholder bar charts in (d) erased; the missing connector carrying D_a(x) to the output mix drawn in the art's grey. Panels: (a) step F_a, (b) sign test, (c) schedules on 2 -> 1/8, (d) output-only recovery.
+- Methodology (Sec. 3) now opens with a summary paragraph walking through Fig. 1(a)-(d); the intro cites Fig. 1 before the collision figure (now Fig. 2). Supplement references updated (main Fig. 2 collision, Fig. 4 sweep).
+- Caption ends "Artwork created in BioRender; all labels typeset by the authors"; the LLM statement discloses BioRender. The named BioRender citation goes in at camera-ready.
+- Fixed a stray theorem heading at a column break (needspace before Theorem 1).
+- The body now ends on p. 9 (about 1 page over the 8-page limit); expanded working draft.
