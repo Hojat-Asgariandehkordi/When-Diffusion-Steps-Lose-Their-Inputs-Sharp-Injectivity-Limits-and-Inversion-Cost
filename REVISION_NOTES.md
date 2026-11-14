@@ -56,3 +56,7 @@ Open items for the authors
 - Removed the main-paper float. The supplement already holds the fuller two-arm version (Supp. Sec. E, Fig. 1), which the text now cites.
 - The paragraph was rewritten with a positive lead ("Robustness to the optimizer, budget and interval. The separation is a property of the step, not of the solver.") and keeps every number. The only number that left the main text is the figure's 75% axis tick.
 - Body now ends higher on p. 9 (about 0.4 column saved). scripts/fig_controls_main.py is kept for reference but no longer used.
+
+## Pass 8 (supplement compile errors, 2026-11-14)
+- `supplement.tex` pointed to `\bibliography{references}`, which only resolved through the build script's BIBINPUTS. Compiled on its own (as in Overleaf), all 11 supplement citations were undefined and the reference list was empty. It now points to `../manuscript/references`.
+- Verified that both main.tex and supplement.tex compile from their own folders with no TEXINPUTS/BIBINPUTS: 0 errors, 0 undefined citations or references, 0 overfull boxes.
