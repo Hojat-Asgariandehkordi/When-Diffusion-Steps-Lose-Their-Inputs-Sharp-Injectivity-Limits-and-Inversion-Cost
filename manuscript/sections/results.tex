@@ -11,22 +11,24 @@ We organize the results around three questions. Does a step outside the guarante
 
 \begin{table}[t]
 \centering\small
-\setlength{\tabcolsep}{3.2pt}
-\begin{tabular}{@{}lrrrrr@{}}
+\setlength{\tabcolsep}{4pt}
+\begin{tabular}{@{}l c S[table-format=2.0] S[table-format=2.0] S[table-format=1.4] S[table-format=3.1]@{}}
 \toprule
-Step map & Calls & Clean & Noisy & $e_{\rm flow}$ & $N_f$\\
+ & & \multicolumn{2}{c}{Recovered $\uparrow$} & & \\
+\cmidrule(lr){3-4}
+Step map & Calls & {Clean} & {Noisy} & {$e_{\rm flow}\downarrow$} & {$N_f\downarrow$}\\
 \midrule
-\multicolumn{6}{@{}l}{\emph{FFHQ64 VP}, $N=\FFHQN$, ceiling \FFHQCap{}}\\
-\tablerows{generated/ffhq_rows_labeled}
+\multicolumn{6}{@{}l}{\emph{FFHQ64 VP} ($N=\FFHQN$, ceiling \FFHQCap{})}\\
+\tablerows{generated/table1_ffhq}
 \midrule
-\multicolumn{6}{@{}l}{\emph{CIFAR-10 VP}, $N=\PrimaryN$, ceiling \PrimaryCap{}}\\
-\tablerows{generated/primary_rows_labeled}
+\multicolumn{6}{@{}l}{\emph{CIFAR-10 VP} ($N=\PrimaryN$, ceiling \PrimaryCap{})}\\
+\tablerows{generated/table1_primary}
 \midrule
-\multicolumn{6}{@{}l}{\emph{CIFAR-10 VE}, $N=\VEN$, ceiling \FFHQCap{}}\\
-\tablerows{generated/ve_rows_labeled}
+\multicolumn{6}{@{}l}{\emph{CIFAR-10 VE} ($N=\VEN$, ceiling \FFHQCap{})}\\
+\tablerows{generated/table1_ve}
 \bottomrule
 \end{tabular}
-\caption{Anderson recovery at each cohort's ceiling. Clean and Noisy count recovered sources; $e_{\rm flow}$ and $N_f$ are defined in \cref{sec:metrics} (lower is better for both).}
+\caption{Anderson recovery at each cohort's ceiling, as counts out of $N$ sources. $e_{\rm flow}$ and $N_f$ are defined in \cref{sec:metrics}; bold marks the best value per cohort.}
 \label{tab:recovery}
 \end{table}
 
