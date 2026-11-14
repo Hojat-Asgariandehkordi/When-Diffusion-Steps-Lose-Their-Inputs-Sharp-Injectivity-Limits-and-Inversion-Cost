@@ -3,6 +3,11 @@ set -euo pipefail
 root="$(cd -- "$(dirname -- "$0")/.." && pwd)"
 out="$(realpath -m -- "$1")"
 mkdir -p -- "$out"
+# supplement/references.bib must stay identical to manuscript/references.bib (Overleaf's BibTeX
+# cannot open a database outside the main file's folder).
+if ! cmp -s "$root/manuscript/references.bib" "$root/supplement/references.bib"; then
+  echo "ERROR: supplement/references.bib differs from manuscript/references.bib; copy it over." >&2; exit 1
+fi
 export SOURCE_DATE_EPOCH=1794182400 FORCE_SOURCE_DATE=1
 export TEXINPUTS="$root/manuscript:" BIBINPUTS="$root/manuscript:" BSTINPUTS="$root/manuscript:"
 export TEXMFVAR="$out/texmf-var" TEXMFCACHE="$out/texmf-cache"

@@ -60,3 +60,4 @@ Open items for the authors
 ## Pass 8 (supplement compile errors, 2026-11-14)
 - `supplement.tex` pointed to `\bibliography{references}`, which only resolved through the build script's BIBINPUTS. Compiled on its own (as in Overleaf), all 11 supplement citations were undefined and the reference list was empty. It now points to `../manuscript/references`.
 - Verified that both main.tex and supplement.tex compile from their own folders with no TEXINPUTS/BIBINPUTS: 0 errors, 0 undefined citations or references, 0 overfull boxes.
+- Follow-up: Overleaf's BibTeX refuses `../` database paths ("I couldn't open database file ../manuscript/references.bib"). The supplement now uses its own `supplement/references.bib`, a byte-identical copy, and `build.sh` fails if the two copies ever differ. Verified with BibTeX in paranoid mode (openin_any=p).
