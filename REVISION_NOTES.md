@@ -44,3 +44,9 @@ Open items for the authors
 - Caption ends "Artwork created in BioRender; all labels typeset by the authors"; the LLM statement discloses BioRender. The named BioRender citation goes in at camera-ready.
 - Fixed a stray theorem heading at a column break (needspace before Theorem 1).
 - The body now ends on p. 9 (about 1 page over the 8-page limit); expanded working draft.
+
+## Pass 6 (white space, bold, literature review; 2026-11-14)
+- White space: removed the \clearpage before the LLM statement (it left a 3-in blank column on p. 9). A blank-run scan of every column now finds no gap above 0.55 in except the natural end of the references.
+- Bold: all \paragraph run-in headings removed. Theory, solvers, intro and implementation paragraphs now open with plain sentences; results paragraphs use italic leads. Table 1 cohort labels are italic. Figures keep bold only for panel letters. Theorem/Lemma/Proposition headers stay bold (amsthm).
+- Literature review: three connected paragraphs (inversion as a numerical problem; reversal by storing extra state; invertibility theory). Added verified citations: AIDI (ICCV 2023), Fixed-point inversion (arXiv 2023), ReNoise (ECCV 2024), edit-friendly DDPM inversion (CVPR 2024), invertible ResNets (ICML 2019), Neural ODEs (NeurIPS 2018), Tweedie's formula (Efron, JASA 2011). The positioning is explicit: these solvers search for a preimage of a step they did not design, while we characterize when that preimage is unique.
+- Checks: 0 overfull boxes, no undefined references, all numbers from the previous version preserved.

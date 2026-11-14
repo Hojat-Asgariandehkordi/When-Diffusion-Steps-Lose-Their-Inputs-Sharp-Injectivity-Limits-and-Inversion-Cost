@@ -12,8 +12,7 @@ All maps advance the state over the stressed interval from sigma $2$ to sigma $1
 
 Primary saved targets were computed on GPU and inverted on CPU; the fresh cohorts use the same CPU operator for both, and a clean CPU-target replay on the primary cohort isolates the device change. Outer states are float64 and denoisers evaluate in float32. Each inverse runs on one image at a time.
 
-\paragraph{Implementation details.}
-Noisy targets use coordinate standard deviation $10^{-3}$. AA uses memory five and damping $0.8$, and stops when $e_y<2\times10^{-6}$. Primary ceilings are 80, 160 and \PrimaryCap{} iterative denoiser traversals, and the fresh cohorts use a ceiling of \FFHQCap{} forwards. The recovery threshold is $e_x\le0.02$. Bootstrap intervals use 10,000 draws. Initialization and final diagnostics are itemized in the supplement.
+In all runs, noisy targets use coordinate standard deviation $10^{-3}$. AA uses memory five and damping $0.8$, and stops when $e_y<2\times10^{-6}$. Primary ceilings are 80, 160 and \PrimaryCap{} iterative denoiser traversals, and the fresh cohorts use a ceiling of \FFHQCap{} forwards. The recovery threshold is $e_x\le0.02$. Bootstrap intervals use 10,000 draws. Initialization and final diagnostics are itemized in the supplement.
 
 \subsection{Baselines}
 \label{sec:baselines}

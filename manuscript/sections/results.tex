@@ -16,13 +16,13 @@ We organize the results around three questions. Does a step outside the guarante
 \toprule
 Step map & Calls & Clean & Noisy & $e_{\rm flow}$ & $N_f$\\
 \midrule
-\multicolumn{6}{@{}l}{\textbf{FFHQ64 VP}, $N=\FFHQN$, ceiling \FFHQCap{}}\\
+\multicolumn{6}{@{}l}{\emph{FFHQ64 VP}, $N=\FFHQN$, ceiling \FFHQCap{}}\\
 \tablerows{generated/ffhq_rows_labeled}
 \midrule
-\multicolumn{6}{@{}l}{\textbf{CIFAR-10 VP}, $N=\PrimaryN$, ceiling \PrimaryCap{}}\\
+\multicolumn{6}{@{}l}{\emph{CIFAR-10 VP}, $N=\PrimaryN$, ceiling \PrimaryCap{}}\\
 \tablerows{generated/primary_rows_labeled}
 \midrule
-\multicolumn{6}{@{}l}{\textbf{CIFAR-10 VE}, $N=\VEN$, ceiling \FFHQCap{}}\\
+\multicolumn{6}{@{}l}{\emph{CIFAR-10 VE}, $N=\VEN$, ceiling \FFHQCap{}}\\
 \tablerows{generated/ve_rows_labeled}
 \bottomrule
 \end{tabular}
@@ -30,11 +30,9 @@ Step map & Calls & Clean & Noisy & $e_{\rm flow}$ & $N_f$\\
 \label{tab:recovery}
 \end{table}
 
-\paragraph{The guaranteed step recovers every source.}
-On the separately frozen FFHQ64 panel, DPM++2S and Heun2 each recover \FFHQDPMRecovered{} clean sources at the 160-forward ceiling (\cref{fig:tradeoff,tab:recovery}), and both also recover every noisy target at coordinate noise $10^{-3}$. One Heun step, whose first weight is $-6.5625$, recovers only \FFHQHeunOneRecovered{} clean sources. The paired difference in clean failure rate, DPM++2S minus Heun1, is \FFHQContrast{} percentage points with a 95\% seed-bootstrap interval. The same ordering holds on the two CIFAR-10 cohorts. DPM++2S recovers \PrimaryDPMRecovered{} clean and all noisy sources on the reused CIFAR-VP panel at \PrimaryCap{} forwards and \VEReconstruction{} on the separately frozen CIFAR-VE panel, while Heun1 recovers 18/64 and 10/32. Zero observed failures give two-sided exact 95\% upper failure limits of \PrimaryFailureBound{} at $N=64$ and \VEFailureBound{} at $N=32$.
+\emph{The guaranteed step recovers every source.} On the separately frozen FFHQ64 panel, DPM++2S and Heun2 each recover \FFHQDPMRecovered{} clean sources at the 160-forward ceiling (\cref{fig:tradeoff,tab:recovery}), and both also recover every noisy target at coordinate noise $10^{-3}$. One Heun step, whose first weight is $-6.5625$, recovers only \FFHQHeunOneRecovered{} clean sources. The paired difference in clean failure rate, DPM++2S minus Heun1, is \FFHQContrast{} percentage points with a 95\% seed-bootstrap interval. The same ordering holds on the two CIFAR-10 cohorts. DPM++2S recovers \PrimaryDPMRecovered{} clean and all noisy sources on the reused CIFAR-VP panel at \PrimaryCap{} forwards and \VEReconstruction{} on the separately frozen CIFAR-VE panel, while Heun1 recovers 18/64 and 10/32. Zero observed failures give two-sided exact 95\% upper failure limits of \PrimaryFailureBound{} at $N=64$ and \VEFailureBound{} at $N=32$.
 
-\paragraph{Among successful steps, work and fidelity trade off.}
-\Cref{fig:tradeoff} places each map by its mean inverse work and its mean forward RMS, on a log axis so that the bootstrap intervals are visible; on FFHQ64 they are narrower than the markers, and dashed lines mark each cohort's AA ceiling.
+\emph{Among successful steps, work and fidelity trade off.} \Cref{fig:tradeoff} places each map by its mean inverse work and its mean forward RMS, on a log axis so that the bootstrap intervals are visible; on FFHQ64 they are narrower than the markers, and dashed lines mark each cohort's AA ceiling.
 DPM++2S needs two denoiser calls to advance the state and \FFHQDPMWork{} mean iterative calls to recover it. Heun2 needs four calls to advance and \FFHQHeunTwoWork{} to recover, but follows the fine trajectory more closely, with mean forward RMS \FFHQHeunTwoFlow{} against \FFHQDPMFlow{}. The arrow in \cref{fig:tradeoff} shows this exchange: the two maps reach the same recovery, and moving from DPM++2S to Heun2 halves the forward error at roughly double the inverse work. Heun2 succeeds even though both of its substep ratios are below $1/2$. The theorem guarantees invertibility for every prior; it does not predict failure for a particular learned network, and Heun2 is an example of a schedule outside the guarantee that inverts well on these checkpoints. On the reused CIFAR-VP panel, Euler2 is also successful with work similar to DPM++2S, sigma-midpoint has lower forward RMS but more recovery failures, and Heun2 again recovers all sources with the lowest forward error. On CIFAR-VE, Heun2 recovers 31/32. The Heun64/128 mean RMS disagreements of \FFHQRefinement{} on FFHQ64, \PrimaryRefinement{} on CIFAR-VP and \VERefinement{} on CIFAR-VE show that the Heun128 reference is converged far below these forward errors.
 
 \begin{figure}[t]
@@ -44,8 +42,7 @@ DPM++2S needs two denoiser calls to advance the state and \FFHQDPMWork{} mean it
 \label{fig:controlled}
 \end{figure}
 
-\paragraph{The first weight, with everything else fixed.}
-Heun1 and DPM++2S differ in more than the sign of $w_1$. Heun1 retains less of the input in its stage ($q=1/16$ against $1/4$) and evaluates its second prediction at a lower noise ($0.125$ against $0.5$). To isolate the weight, the fixed-stage sweep in \cref{fig:controlled} keeps the DPM++2S stage, $q=\kappa=1/4$, and varies only $w_1$ with $w_2=15/16-w_1$. Varying the weight moves the output along a single direction,
+\emph{The first weight, with everything else fixed.} Heun1 and DPM++2S differ in more than the sign of $w_1$. Heun1 retains less of the input in its stage ($q=1/16$ against $1/4$) and evaluates its second prediction at a lower noise ($0.125$ against $0.5$). To isolate the weight, the fixed-stage sweep in \cref{fig:controlled} keeps the DPM++2S stage, $q=\kappa=1/4$, and varies only $w_1$ with $w_2=15/16-w_1$. Varying the weight moves the output along a single direction,
 \begin{equation}
  F_{w_1}(x)=F_0(x)+w_1\bigl[D_a(x)-D_{a/4}(p_a(x))\bigr],
  \label{eq:sweep}
@@ -59,11 +56,9 @@ so each arm is DPM++2S plus a multiple of the difference between the two predict
 \label{fig:controls}
 \end{figure}
 
-\paragraph{Sensitivity to interval, optimizer and budget.}
-A failure of one inverse procedure could reflect the optimizer rather than the map. \Cref{fig:controls} therefore continues from the Anderson iterate with L-BFGS or inexact Newton--GMRES (the noisy arm is in Supplement~E), charging every forward and backward traversal against the same ceilings of 80, 160 and 320. Heun1 fails on about three quarters of the sources under all three procedures and all three ceilings, while DPM++2S and Euler2 fail on none and Heun2 on at most two. Warm-started L-BFGS and Newton--GMRES at the 320-traversal ceiling retain the large Heun1 gap and introduce a few Heun2 misses. A contiguous 20\,s Anderson allocation including initialization also retains the gap. The native strong-Wolfe L-BFGS diagnostic still has \NativeHeunFailure{} clean Heun1 failures on the first eight reused indices, at a mean of \NativeHeunWork{} charged traversals under an unequal-work protocol. The interval matters as well. On the shorter $2\to1/2$ interval of an earlier GPU experiment, all five maps recovered all 64 sources in both target arms under a ceiling of 80 \emph{map evaluations}, which gives unequal denoiser work across maps. Finally, the geometric Heun4 schedule that meets the half-ratio criterion recovers \HeunFourRecovered{} clean sources at AA320 with CPU targets, with forward RMS \HeunFourFlow{} and \HeunFourWork{} mean iterative calls. Supplements~E and F give the complete controls and their budgets.
+\emph{Sensitivity to interval, optimizer and budget.} A failure of one inverse procedure could reflect the optimizer rather than the map. \Cref{fig:controls} therefore continues from the Anderson iterate with L-BFGS or inexact Newton--GMRES (the noisy arm is in Supplement~E), charging every forward and backward traversal against the same ceilings of 80, 160 and 320. Heun1 fails on about three quarters of the sources under all three procedures and all three ceilings, while DPM++2S and Euler2 fail on none and Heun2 on at most two. Warm-started L-BFGS and Newton--GMRES at the 320-traversal ceiling retain the large Heun1 gap and introduce a few Heun2 misses. A contiguous 20\,s Anderson allocation including initialization also retains the gap. The native strong-Wolfe L-BFGS diagnostic still has \NativeHeunFailure{} clean Heun1 failures on the first eight reused indices, at a mean of \NativeHeunWork{} charged traversals under an unequal-work protocol. The interval matters as well. On the shorter $2\to1/2$ interval of an earlier GPU experiment, all five maps recovered all 64 sources in both target arms under a ceiling of 80 \emph{map evaluations}, which gives unequal denoiser work across maps. Finally, the geometric Heun4 schedule that meets the half-ratio criterion recovers \HeunFourRecovered{} clean sources at AA320 with CPU targets, with forward RMS \HeunFourFlow{} and \HeunFourWork{} mean iterative calls. Supplements~E and F give the complete controls and their budgets.
 
-\paragraph{Small residuals with large source errors.}
-A numerical inverse can stop at a point that fits the target well but is far from the source. On clean primary Heun1, \PrimaryHeunOneLowResidual{} misses at AA320 fall below the residual stop. For each such pair, with CPU map $F_{\mathrm{CPU}}$ and saved GPU target $y$, the triangle inequality bounds how far the CPU map separates the estimate from the true source,
+\emph{Small residuals with large source errors.} A numerical inverse can stop at a point that fits the target well but is far from the source. On clean primary Heun1, \PrimaryHeunOneLowResidual{} misses at AA320 fall below the residual stop. For each such pair, with CPU map $F_{\mathrm{CPU}}$ and saved GPU target $y$, the triangle inequality bounds how far the CPU map separates the estimate from the true source,
 \begin{equation}
  \begin{aligned}
  &\rms\bigl(F_{\mathrm{CPU}}(\widehat x)-F_{\mathrm{CPU}}(x)\bigr)\\

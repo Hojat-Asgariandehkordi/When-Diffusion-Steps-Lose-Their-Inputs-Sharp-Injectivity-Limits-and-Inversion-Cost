@@ -11,7 +11,7 @@ TS = 0.66
 W, H = 6.5, 2.2
 x0s = [0.55, 3.62]
 for (title, g), x0 in zip(data.GALLERY.items(), x0s):
-    fig.text(x0 / W, 0.975, title, fontweight="bold", fontsize=9, va="top")
+    fig.text(x0 / W, 0.975, title, fontsize=9, va="top")
     for r in range(2):
         y = H - 0.42 - r * (TS + 0.3) - TS
         if x0 == x0s[0]:
@@ -21,7 +21,7 @@ for (title, g), x0 in zip(data.GALLERY.items(), x0s):
             ax = fig.add_axes([x / W, y / H, TS / W, TS / H])
             framed(ax, tile("gallery", g["tiles"][r][c], g["native"]), colcol[name], lw=1.0 if c else 1.3)
             if r == 0:
-                ax.set_title(name, fontsize=8, fontweight="bold", color=colcol[name], pad=2.5)
+                ax.set_title(name, fontsize=8, color=colcol[name], pad=2.5)
             if c:
                 v = g["ex"][r][c - 1]
                 fail = float(v) > data.RECOVERY_THRESHOLD

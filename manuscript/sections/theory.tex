@@ -2,7 +2,6 @@
 \label{sec:theory}
 \Cref{fig:overview} summarizes the logic of the paper. A two-stage sampler step $F_a$ moves a state from noise $a$ to a lower noise $b$ by calling the denoiser twice, first on the input and then on a stage state built from that first prediction, and it mixes the two predictions with weights $w_1$ and $w_2$ (\cref{fig:overview}a). We ask whether the input can be recovered from the saved output alone. This section proves that the signs of the two weights decide the answer: nonnegative weights give a global inverse for every prior and noise level, while a negative weight can fold the map so that three inputs share one output (\cref{fig:overview}b). \Cref{sec:solvers} turns this test into rules for solvers and schedules (\cref{fig:overview}c), and \cref{sec:experiment,sec:results} test it by inverting steps of pretrained denoisers from their outputs (\cref{fig:overview}d).
 
-\paragraph{Data, noise and the exact denoiser.}
 Let $X\in\R^d$ be a random image with law $\pi$, the \emph{prior}, and assume $\pi$ has compact support, contained in a Euclidean ball of radius $R$ around some point. Let $Z\sim\mathcal N(0,I_d)$ be independent of $X$. At noise level $s>0$ we observe $x=X+sZ$, and the exact denoiser is the posterior mean
 \begin{equation}
  D_s(x)=\E[X\mid X+sZ=x]
@@ -11,7 +10,6 @@ Let $X\in\R^d$ be a random image with law $\pi$, the \emph{prior}, and assume $\
 \end{equation}
 The right-hand side is smooth in $x$ for every compact prior, including priors made of finitely many images, and we use it as the definition of $D_s$ throughout. A learned diffusion network approximates $D_s$; the theory concerns the exact map.
 
-\paragraph{The two-stage step.}
 A sampler step moves a state from source noise $a$ to a smaller target noise $b$, and we write $\rho=b/a\in(0,1)$ for the \emph{denoising ratio}. A two-stage step first forms a \emph{stage state} that keeps a fraction $q\in(0,1)$ of the input and moves the rest toward the first prediction, then evaluates a second prediction at the stage state and noise $\kappa a$ with $\kappa>0$. The output mixes the input and the two predictions with a residual weight $r>0$ and prediction weights $w_1,w_2\in\R$:
 \begin{align}
  p_a(x)&=qx+(1-q)D_a(x),\nonumber\\
@@ -112,8 +110,7 @@ In either case $F_a$ decreases somewhere for small $a$, while $F'_a\to r>0$ in b
 Sufficiency is \cref{prop:sufficient}, which holds for every dimension, compact prior and $a>0$. Necessity is \cref{prop:fold}, whose prior is the same for every $a$.
 \end{proof}
 
-\paragraph{Scope of the criterion.}
-The necessity is universal over priors and noise levels, not a statement about every particular map. A point-mass prior, for instance, makes every member of the family affine with slope $r$, hence injective whatever the signs. The converse uses $q<1$. When $q=1$, nonnegative weights still suffice by the symmetric Jacobian, and in the coincident case $q=\kappa=1$ the two predictions merge and the exact criterion becomes $w_1+w_2\ge0$.
+The necessity in \cref{thm:sharp} is universal over priors and noise levels, not a statement about every particular map. A point-mass prior, for instance, makes every member of the family affine with slope $r$, hence injective whatever the signs. The converse uses $q<1$. When $q=1$, nonnegative weights still suffice by the symmetric Jacobian, and in the coincident case $q=\kappa=1$ the two predictions merge and the exact criterion becomes $w_1+w_2\ge0$.
 
 The bound \cref{eq:colip} also carries over to approximate denoisers.
 

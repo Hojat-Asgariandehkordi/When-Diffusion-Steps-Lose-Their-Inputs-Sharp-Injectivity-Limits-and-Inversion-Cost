@@ -37,7 +37,7 @@ for ax, (name, d) in zip(axes, data.TRADEOFF.items()):
     ax.set_yticks([0.02, 0.05, 0.1]); ax.set_yticklabels(["0.02", "0.05", "0.10"])
     ax.minorticks_off()
     ax.set_xlim(0, 335); ax.set_xticks([0, 80, 160, 240, 320])
-    ax.set_title(f"{name}, {d['note']}", fontsize=8.6, fontweight="bold", loc="left", pad=2)
+    ax.set_title(f"{name}, {d['note']}", fontsize=8.6, loc="left", pad=2)
 axes[1].set_ylabel(r"mean forward RMS $e_{\rm flow}$ (log)")
 axes[-1].set_xlabel("mean iterative denoiser forwards per clean target", labelpad=1)
 handles = [Line2D([], [], marker=style.MARK[m], color=C[m], ls="none", ms=4, mfc="white", mew=1.0,

@@ -33,7 +33,7 @@ for ax, inv in zip(axes, data.CONTROLS["clean"]):
                     mec="white", mew=0.3, lw=0.8, elinewidth=0.8, capsize=1.6, capthick=0.8, zorder=3)
     ax.set_ylim(-3, 100); ax.set_yticks([0, 25, 50, 75, 100])
     ax.set_xticks(range(3), data.CEILINGS, fontsize=7.8); ax.set_xlim(-0.45, 2.45)
-    ax.set_title(titles[inv], fontsize=8.2, fontweight="bold", pad=2, linespacing=1.0)
+    ax.set_title(titles[inv], fontsize=8.2, pad=2, linespacing=1.0)
 axes[0].set_ylabel("clean failures (%)", labelpad=1)
 fig.text(0.56, 0.02, "iterative traversal ceiling (forward + backward)", ha="center", fontsize=8.4)
 h = [Line2D([], [], color=C[m], marker=style.MARK[m], ms=3.6, mec="white", mew=0.3, lw=0.8, label=m)

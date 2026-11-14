@@ -34,7 +34,7 @@ for i, arm in enumerate(["clean", "noisy"]):
         ax.set_ylim(-3, 100); ax.set_yticks([0, 25, 50, 75, 100])
         ax.set_xticks(range(3), data.CEILINGS); ax.set_xlim(-0.4, 2.4)
         if i == 0:
-            ax.set_title(inv, fontweight="bold", pad=3)
+            ax.set_title(inv, pad=3)
     axes[i, 0].set_ylabel(f"{arm.capitalize()} failures (%)")
 fig.text(0.54, 0.07, "Iterative traversal ceiling (forward + backward)", ha="center", fontsize=8)
 fig.subplots_adjust(bottom=0.18, top=0.93, left=0.09, right=0.99)

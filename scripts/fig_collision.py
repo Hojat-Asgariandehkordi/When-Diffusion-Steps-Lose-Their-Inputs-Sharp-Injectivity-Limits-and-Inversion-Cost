@@ -49,9 +49,9 @@ for lab, u in zip(labels, roots):
     for yv in (H(u), P(u)):
         ax.scatter([u], [yv], s=18, color=col, edgecolor="white", lw=0.5, zorder=5)
     ax.text(u + {"A": -0.055, "B": 0.0, "C": -0.06}[lab], H(u) + 0.07, lab, color=col, ha="center", va="bottom",
-            fontsize=9, fontweight="bold")
-ax.text(0.62, 1.47, "Heun1", color=C["Heun1"], fontsize=8.8, fontweight="bold", ha="left")
-ax.text(1.02, 0.72, "DPM++2S", color=C["DPM++2S"], fontsize=8.8, fontweight="bold", ha="left")
+            fontsize=9)
+ax.text(0.62, 1.47, "Heun1", color=C["Heun1"], fontsize=8.8, ha="left")
+ax.text(1.02, 0.72, "DPM++2S", color=C["DPM++2S"], fontsize=8.8, ha="left")
 ax.text(1.42, data.FIG1_TARGET + 0.03, "shared output 1.25", color=C["muted"], fontsize=8,
         ha="center", va="bottom", style="italic")
 ax.set_xlim(0, 2.1); ax.set_ylim(0, 1.66)
@@ -68,7 +68,7 @@ xs = [1.06, 1.68, 2.30]
 ytop, ymid, ybot = 1.3, 0.72, 0.14
 for txt, y, col in [("sources", ytop, C["ink"]), ("Heun1\noutput", ymid, C["Heun1"]),
                     ("DPM++2S\noutputs", ybot, C["DPM++2S"])]:
-    fig.text(fx(0.3), fy(y + ts / 2), txt, fontsize=8.4, fontweight="bold", color=col, va="center",
+    fig.text(fx(0.3), fy(y + ts / 2), txt, fontsize=8.4, color=col, va="center",
              ha="left", linespacing=1.0)
 for lab, x, u in zip(labels, xs, roots):
     a1 = fig.add_axes([fx(x), fy(ytop), fx(ts), fy(ts)]); framed(a1, T[f"{lab}_src"], style.ABC[lab], 1.2)

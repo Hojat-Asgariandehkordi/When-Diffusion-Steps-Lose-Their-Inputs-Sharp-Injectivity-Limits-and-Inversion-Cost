@@ -33,10 +33,10 @@ erase(2490, 1215, 2680, 1370)   # placeholder bars, failed row
 # ---- LAYOUT: (x, y, text, size, colour, ha, va, weight)
 LAYOUT = [
     # panel titles
-    (75, 92, "(a) One two-stage step $F_a$", 9, INK, "left", "center", "bold"),
-    (1740, 92, "(b) Sign test (Thm. 1)", 9, INK, "left", "center", "bold"),
-    (75, 838, r"(c) Schedules from $a=2$ to $b=1/8$ (Cor. 1)", 9, INK, "left", "center", "bold"),
-    (1420, 838, "(d) Recovery with a learned denoiser (Sec. 6)", 9, INK, "left", "center", "bold"),
+    (75, 92, r"$\mathbf{(a)}$ One two-stage step $F_a$", 9, INK, "left", "center", "normal"),
+    (1740, 92, r"$\mathbf{(b)}$ Sign test (Thm. 1)", 9, INK, "left", "center", "normal"),
+    (75, 838, r"$\mathbf{(c)}$ Schedules from $a=2$ to $b=1/8$ (Cor. 1)", 9, INK, "left", "center", "normal"),
+    (1420, 838, r"$\mathbf{(d)}$ Recovery with a learned denoiser (Sec. 6)", 9, INK, "left", "center", "normal"),
     # (a) step
     (190, 585, "input $x$ at noise $a$", 8, INK, "center", "top", "normal"),
     (485, 268, "$D_a$", 8.5, INK, "center", "center", "normal"),

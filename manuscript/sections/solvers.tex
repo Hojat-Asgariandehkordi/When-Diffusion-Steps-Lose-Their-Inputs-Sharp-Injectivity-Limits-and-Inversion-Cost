@@ -2,8 +2,7 @@
 \label{sec:solvers}
 In additive noise coordinates, where the state at noise $s$ is an image plus $s$ times standard Gaussian noise, the probability-flow ODE has drift $f(x,s)=(x-D_s(x))/s$~\cite{songsde2021,karras2022}. A step from $a$ to $b$ has length $\Delta=b-a<0$. The Euler step $x+\Delta f(x,a)=\rho x+(1-\rho)D_a(x)$ uses one denoiser call. By \cref{eq:covariance} it is strongly monotone with slope at least $\rho$, hence always invertible. We now write the three common two-evaluation methods in the form \cref{eq:family}. All three have $r=\rho$ and differ in where the second prediction is taken and how the predictions are weighted. Supplement~B gives the intermediate algebra.
 
-\paragraph{Sigma-Heun.}
-Heun's method takes an Euler predictor to $b$ and averages the drifts at both ends,
+Sigma-Heun, the Heun method in the noise variable, takes an Euler predictor to $b$ and averages the drifts at both ends,
 \begin{align}
  p&=\rho x+(1-\rho)D_a(x),\nonumber\\
  F_H(x)&=x+\tfrac{\Delta}{2}\bigl[f(x,a)+f(p,b)\bigr].
@@ -16,15 +15,13 @@ Substituting the drift and collecting terms gives $q=\kappa=\rho$ and
 \end{equation}
 The second weight is always positive, but $w_1$ carries the factor $2\rho-1$. By \cref{thm:sharp}, a Heun step is universally invertible exactly when $\rho\ge1/2$, that is, when it reduces the noise by at most a factor of two.
 
-\paragraph{Explicit sigma-midpoint.}
-The midpoint rule takes an Euler step to $m=(a+b)/2$ and uses the drift there for the full step. This gives $q=\kappa=(1+\rho)/2$ and
+The explicit sigma-midpoint rule takes an Euler step to $m=(a+b)/2$ and uses the drift there for the full step. This gives $q=\kappa=(1+\rho)/2$ and
 \begin{equation}
  w_1=-\frac{(1-\rho)^2}{1+\rho},\qquad w_2=\frac{2(1-\rho)}{1+\rho}.
  \label{eq:midweights}
 \end{equation}
 Here $w_1<0$ for every $\rho<1$, so no fixed midpoint step that actually reduces the noise carries the universal guarantee.
 
-\paragraph{DPM-Solver++(2S).}
 The log-SNR midpoint step of DPM-Solver++~\cite{lu2022}, without thresholding, places its intermediate noise at the geometric mean $\sqrt{ab}$ and uses only the second prediction in the update,
 \begin{align}
  p&=\sqrt\rho\,x+(1-\sqrt\rho)D_a(x),\nonumber\\
@@ -45,5 +42,4 @@ Consider a schedule of $n$ Heun substeps with fixed ratios $\rho_j\in(0,1]$ whos
 When all ratios meet the threshold, each substep is a diffeomorphism and so is their composition. Otherwise take the \emph{first} ratio below $1/2$. With the two-atom prior, shrinking the global scale makes that substep's source noise small enough for \cref{thm:sharp} to produce a collision. The preceding substeps are onto, so two distinct initial states reach the two colliding inputs, and every later deterministic substep maps their common output to a common output. For the length, $n$ ratios that are each at least $1/2$ have product at least $2^{-n}$, so $b/a\ge2^{-n}$. Conversely, $n$ equal ratios $(b/a)^{1/n}$ meet the threshold once $n\ge\log_2(a/b)$.
 \end{proof}
 
-\paragraph{The interval used in our experiments.}
-At $2\to1/8$ the ratio is $\rho=1/16$. One Heun step then has $(w_1,w_2)=(-6.5625,7.5)$, a strongly negative first weight, and its second prediction is evaluated at noise $1/8$. One DPM++2S step has $(w_1,w_2)=(0,0.9375)$ with its second prediction at $1/2$. The geometric grid $2,1,1/2,1/4,1/8$ attains $n_{\min}=4$ Heun substeps and eight denoiser calls, whereas one DPM++2S step attains the guarantee with two calls. The EDM power-7 grid used for the two-step Heun2 schedule has ratios of about $0.287$ and $0.218$, both below $1/2$, so Heun2 lies outside the guarantee. Euler illustrates the separate role of forward accuracy, since it is always invertible but follows the trajectory less closely. The Heun limit is a structural budget for this family of schedules. Numerical accuracy and the work needed to solve for a source must be measured separately, which the following sections do.
+On the interval used in our experiments, $2\to1/8$, the ratio is $\rho=1/16$. One Heun step then has $(w_1,w_2)=(-6.5625,7.5)$, a strongly negative first weight, and its second prediction is evaluated at noise $1/8$. One DPM++2S step has $(w_1,w_2)=(0,0.9375)$ with its second prediction at $1/2$. The geometric grid $2,1,1/2,1/4,1/8$ attains $n_{\min}=4$ Heun substeps and eight denoiser calls, whereas one DPM++2S step attains the guarantee with two calls. The EDM power-7 grid used for the two-step Heun2 schedule has ratios of about $0.287$ and $0.218$, both below $1/2$, so Heun2 lies outside the guarantee. Euler illustrates the separate role of forward accuracy, since it is always invertible but follows the trajectory less closely. The Heun limit is a structural budget for this family of schedules. Numerical accuracy and the work needed to solve for a source must be measured separately, which the following sections do.
