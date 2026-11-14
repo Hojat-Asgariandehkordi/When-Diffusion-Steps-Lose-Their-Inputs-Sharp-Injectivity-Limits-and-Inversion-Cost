@@ -1,17 +1,20 @@
-\documentclass[11pt,letterpaper]{article}
-\usepackage[margin=1in]{geometry}
-\usepackage[numbers,sort&compress]{natbib}
-\usepackage{times,placeins,float}
+\documentclass[10pt,twocolumn,letterpaper]{article}
+\usepackage[review]{cvpr}      % To produce the REVIEW version
+\usepackage{placeins}
 \input{../manuscript/preamble}
+\definecolor{cvprblue}{rgb}{0.21,0.49,0.74}
+\usepackage[pagebackref,breaklinks,colorlinks,allcolors=cvprblue]{hyperref}
+\input{../manuscript/postamble}
+\def\confName{CVPR}
+\def\confYear{2027}
 \input{../manuscript/generated/numbers}
 \input{../manuscript/generated/round2_numbers}
 \hypersetup{pdftitle={When Diffusion Steps Lose Their Inputs: Supplementary Material}}
 \renewcommand{\thesection}{\Alph{section}}
 \renewcommand{\thetheorem}{S\arabic{theorem}}
-\title{When Diffusion Steps Lose Their Inputs:\\Sharp Injectivity Limits and Inversion Cost\\[3pt]\large Supplementary material}
-\author{Anonymous authors}\date{}
+\title{When Diffusion Steps Lose Their Inputs:\\Sharp Injectivity Limits and Inversion Cost}
 \begin{document}
-\maketitle
+\maketitlesupplementary
 
 \noindent The theorem and the two-image collision concern exact Gaussian posterior means. The recovery study uses numerical outputs from pretrained networks. This supplement gives the exact proofs, complete inverse controls, and protocol for the fixed-stage family sweep.
 
@@ -36,8 +39,10 @@
 \label{sec:proof}
 Let $\pi$ be any compactly supported probability measure on $\R^d$. At positive noise $s$, define
 \[
- Z_s(x)=\int e^{-\|x-u\|^2/(2s^2)}\,d\pi(u),\qquad
- D_s(x)=\frac{\int u e^{-\|x-u\|^2/(2s^2)}\,d\pi(u)}{Z_s(x)}.
+ \begin{aligned}
+ Z_s(x)&=\int e^{-\|x-u\|^2/(2s^2)}\,d\pi(u),\\
+ D_s(x)&=\frac{1}{Z_s(x)}\int u\, e^{-\|x-u\|^2/(2s^2)}\,d\pi(u).
+ \end{aligned}
 \]
 The denominator is strictly positive. Compact support dominates every derivative on bounded observation regions. Differentiating the quotient gives
 \[
@@ -51,7 +56,10 @@ Hence $0\preceq\nabla D_s\preceq R^2s^{-2}I$, and the posterior mean is bounded.
 
 Fix $r>0$, $0<q<1$, $\kappa>0$, and $w_1,w_2\in\R$ with $r+w_1+w_2=1$. For each $a>0$ use the \emph{same} prior in
 \[
- p_a(x)=qx+(1-q)D_a(x),\qquad F_a(x)=rx+w_1D_a(x)+w_2D_{\kappa a}(p_a(x)).
+ \begin{aligned}
+ p_a(x)&=qx+(1-q)D_a(x),\\
+ F_a(x)&=rx+w_1D_a(x)+w_2D_{\kappa a}(p_a(x)).
+ \end{aligned}
 \]
 
 \begin{theorem}[Universal sign characterization]
@@ -76,8 +84,10 @@ Let $v=x-y$. With $\bar A=\int_0^1\nabla D_a(y+t v)\,dt$ we have $D_a(x)-D_a(y)=
 \]
 The same similarity makes the bracket invertible. Because $qI\preceq\bar E\preceq [q+(1-q)R^2/a^2]I$, it also yields the global estimate
 \begin{equation}
- \|F_a(x)-F_a(y)\|_2\ge c_*\|x-y\|_2,\qquad
- c_*=r\sqrt{\frac{q}{q+(1-q)R^2/a^2}}>0.
+ \begin{aligned}
+ &\|F_a(x)-F_a(y)\|_2\ge c_*\|x-y\|_2,\\
+ &c_*=r\sqrt{\frac{q}{q+(1-q)R^2/a^2}}>0.
+ \end{aligned}
  \label{eq:colip}
 \end{equation}
 Bounded posterior means give $F_a(x)=rx+O(1)$. Thus $F_a$ is proper. The image is open by local nonsingularity. A convergent output sequence has bounded preimages and hence a convergent preimage subsequence attaining its limit. The image is closed and nonempty, so connectedness gives surjectivity. The local smooth inverses then agree to form the global inverse.
@@ -89,8 +99,10 @@ For the equiprobable scalar atoms at $\pm1$, Bayes' rule gives $D_s(x)=\tanh(x/s
 \]
 If $w_2<0$, evaluate at $x=0$. Both stages are at zero and
 \[
- a^4F'_a(0)=ra^4+w_1a^2+(w_2/\kappa^2)[qa^2+(1-q)]
- \longrightarrow w_2(1-q)/\kappa^2<0.
+ \begin{aligned}
+ a^4F'_a(0)&=ra^4+w_1a^2+\frac{w_2}{\kappa^2}[qa^2+(1-q)]\\
+ &\longrightarrow w_2(1-q)/\kappa^2<0.
+ \end{aligned}
 \]
 If $w_2\ge0$ and $w_1<0$, use $x_a=a^2$, $h=\operatorname{sech}^2(1)>0$ and $c_0=(1-q)\tanh(1)>0$. Then $A_a(x_a)=h/a^2$ and $p_a(x_a)\ge c_0$. For $t\ge0$, $\operatorname{sech}^2(t)\le4e^{-2t}$, giving
 \[
@@ -125,8 +137,9 @@ With $m=(a+b)/2$, explicit sigma-midpoint has $p=x+\tfrac{\Delta}{2}f(x,a)$ and 
 \[
  \begin{aligned}
  p&=qx+(1-q)D_a(x),\\
- F_M(x)&=\bigl(1+(\rho-1)q/q\bigr)x+
-          (\rho-1)(1-q)D_a(x)/q+(1-\rho)D_m(p)/q\\
+ F_M(x)&=\bigl(1+(\rho-1)q/q\bigr)x\\
+ &\quad+(\rho-1)(1-q)D_a(x)/q\\
+ &\quad+(1-\rho)D_m(p)/q\\
  &=\rho x-\frac{(1-\rho)^2}{1+\rho}D_a(x)+\frac{2(1-\rho)}{1+\rho}D_m(p).
  \end{aligned}
 \]
@@ -149,19 +162,23 @@ Euler has a Euclidean lower difference bound of $\rho$ at one step by posterior 
 \label{sec:exact}
 For two atoms at $\pm1$ and normalized $a=1$, $b=1/4$, the Heun map is
 \[
- p(u)=u/4+3\tanh(u)/4,\qquad H(u)=u/4-3\tanh(u)/4+3\tanh(16p(u))/2.
+ \begin{aligned}
+ p(u)&=u/4+3\tanh(u)/4,\\
+ H(u)&=u/4-3\tanh(u)/4+3\tanh(16p(u))/2.
+ \end{aligned}
 \]
 The residual $H(u)-1.25$ has opposite signs at the endpoints of each disjoint bracket in \cref{tab:brackets}. We evaluate $\tanh z=(\exp(2z)-1)/(\exp(2z)+1)$ with 40 decimal digits of interval arithmetic. Each bound excludes zero. By continuity, each bracket contains a preimage of $1.25$. The plotted input coordinates are rounded numerical roots within these brackets. A 70-digit interval replay also checks finite negative-derivative witnesses near the Heun threshold and near identity for sigma-midpoint, along with a negative-$w_2$ example. The proof in Supplement~A establishes the universal result.
 
-\begin{table}[htbp]
-\centering
+\begin{table}[t]
+\centering\footnotesize
+\setlength{\tabcolsep}{2.5pt}
 \begin{tabular}{@{}lrr@{}}\toprule
-Input bracket & Left residual enclosure & Right residual enclosure\\\midrule
+Bracket & Left enclosure & Right enclosure\\\midrule
 $[0.0810,0.0811]$ & $[-1.59,-1.58]\times10^{-4}$ & $[4.12,4.13]\times10^{-4}$\\
 $[0.5902,0.5903]$ & $[2.03,2.04]\times10^{-5}$ & $[-8.59,-8.58]\times10^{-6}$\\
 $[1.8572,1.8574]$ & $[-1.46,-1.45]\times10^{-5}$ & $[2.15,2.16]\times10^{-5}$\\
 \bottomrule\end{tabular}
-\caption{Conservative decimal enclosures for the signed endpoints. Intervals are rounded outward from the saved certificate.}
+\caption{Conservative decimal enclosures for the signed residuals $H(u)-1.25$ at the left and right endpoints of each input bracket. Intervals are rounded outward from the saved certificate.}
 \label{tab:brackets}
 \end{table}
 
@@ -199,7 +216,7 @@ The scored primary protocol follows a single-unit amendment frozen after a devel
 
 Failure intervals use Clopper--Pearson limits at 95\%. At zero failures in $N$ units the upper limit is $1-0.025^{1/N}$, giving \PrimaryFailureBound{} at $N=64$ and \VEFailureBound{} at $N=32$. Seed-level bootstrap draws preserve all pairing for a contrast. Two all-zero observed arms can yield a degenerate paired interval. That interval reflects the observed seed contrasts. The reused cohort supports a controlled comparison, and each fresh cohort estimates outcomes for its own checkpoint and protocol.
 
-\begin{table}[H]
+\begin{table*}[t]
 \centering\small
 \begin{tabular}{@{}llrrrrrr@{}}\toprule
 Map & Inverse & Failures & Mean $e_x$ & Mean $e_y$ & Mean $N_f$ & Mean $N_b$ & Seconds\\\midrule
@@ -207,9 +224,9 @@ Map & Inverse & Failures & Mean $e_x$ & Mean $e_y$ & Mean $N_f$ & Mean $N_b$ & S
 \bottomrule\end{tabular}
 \caption{Primary CIFAR-VP, clean targets. Each row scores the same 64 reused sources at an iterative ceiling of 320 traversals. $N_f$, $N_b$ and seconds are actual cohort means, excluding initialization and final diagnostics.}
 \label{tab:primary-clean}
-\end{table}
+\end{table*}
 
-\begin{table}[H]
+\begin{table*}[t]
 \centering\small
 \begin{tabular}{@{}llrrrrrr@{}}\toprule
 Map & Inverse & Failures & Mean $e_x$ & Mean $e_y$ & Mean $N_f$ & Mean $N_b$ & Seconds\\\midrule
@@ -217,16 +234,16 @@ Map & Inverse & Failures & Mean $e_x$ & Mean $e_y$ & Mean $N_f$ & Mean $N_b$ & S
 \bottomrule\end{tabular}
 \caption{Primary CIFAR-VP, noisy targets with coordinate SD $0.001$. These use the same sources and ceiling as \cref{tab:primary-clean}. The inverse receives only the noisy target and known operator.}
 \label{tab:primary-noisy}
-\end{table}
+\end{table*}
 
-\begin{figure}[H]
+\begin{figure*}[t]
 \centering
 \includegraphics[width=.9\linewidth]{../figures/controls.pdf}
 \caption{Observed failure percentages across the three registered iterative ceilings. Columns use different inverse procedures on the same 64 reused primary seeds. Rows use the paired target arms. Bars are two-sided exact binomial 95\% intervals. Coincident curves indicate identical displayed outcomes.}
 \label{fig:controls}
-\end{figure}
+\end{figure*}
 
-\begin{table}[H]
+\begin{table*}[t]
 \centering\small
 \begin{tabular}{@{}lllrrrrr@{}}\toprule
 Cohort & Map & Target & Failures & Mean $e_x$ & Mean $e_y$ & Mean $e_{\rm flow}$ & Mean $N_f$\\\midrule
@@ -234,7 +251,7 @@ Cohort & Map & Target & Failures & Mean $e_x$ & Mean $e_y$ & Mean $e_{\rm flow}$
 \bottomrule\end{tabular}
 \caption{Separately frozen VE and FFHQ64 cohorts at the 160-forward AA ceiling. The forward reference is clean and shared across target arms within each map. Iterative forwards exclude initialization and diagnostics.}
 \label{tab:fresh}
-\end{table}
+\end{table*}
 
 \FloatBarrier
 \section{Timing, precision and higher-work diagnostics}
@@ -242,7 +259,7 @@ Cohort & Map & Target & Failures & Mean $e_x$ & Mean $e_y$ & Mean $e_{\rm flow}$
 \paragraph{Contiguous wall time and device change.}
 \Cref{tab:wall} starts its timer before initialization. The maximum observed overrun is \WallOverrun{}\,s. The charged forward count includes the late call when one occurs. The primary GPU target and the CPU evaluation of the source can disagree at the scale of the stopping tolerance. \Cref{tab:precision} pairs the 160-forward primary clean prefixes with fresh CPU targets on the same primary states. All \PrecisionFlags{} flags agree. Both studies are repeated controls on the same seeds. The release also gives all 10\,s and 20\,s primary component prefixes, with initialization separate and the original 320-traversal outer cap flagged when it censors an arm.
 
-\begin{table}[htbp]
+\begin{table*}[t]
 \centering\small
 \begin{tabular}{@{}lrrrrrr@{}}\toprule
 & \multicolumn{2}{c}{Failures} & \multicolumn{2}{c}{Mean elapsed (s)} & \multicolumn{2}{c}{Mean charged forwards}\\
@@ -252,9 +269,9 @@ Map & Clean & Noisy & Clean & Noisy & Clean & Noisy\\\midrule
 \bottomrule\end{tabular}
 \caption{Actual 20\,s contiguous Anderson allocation on the reused primary cohort. Elapsed time and charged calls include initialization and overrun. Final verification is outside the allocation.}
 \label{tab:wall}
-\end{table}
+\end{table*}
 
-\begin{table}[htbp]
+\begin{table*}[t]
 \centering\small
 \begin{tabular}{@{}lrrrrr@{}}\toprule
 Map & GPU-target fail. & CPU-target fail. & CPU mean $e_x$ & CPU mean $e_y$ & CPU mean $N_f$\\\midrule
@@ -262,20 +279,22 @@ Map & GPU-target fail. & CPU-target fail. & CPU mean $e_x$ & CPU mean $e_y$ & CP
 \bottomrule\end{tabular}
 \caption{Clean targets on the same primary sources with AA160. The inverse uses the CPU operator in both columns. CPU metrics use targets generated by that same operator.}
 \label{tab:precision}
-\end{table}
+\end{table*}
 
 \paragraph{Compression on low-residual Heun1 misses.}
 Let $y=F_{\rm GPU}(x)$ be the saved clean target and $\widehat x$ the iterate selected using the CPU residual. For the \PrimaryHeunOneLowResidual{} source misses at AA320 with $e_y<2\times10^{-6}$, we computed the upper bound
 \[
- \frac{\rms(F_{\rm CPU}(\widehat x)-F_{\rm CPU}(x))}{\rms(\widehat x-x)}
- \le \frac{e_y+\rms(F_{\rm GPU}(x)-F_{\rm CPU}(x))}{e_x}.
+ \begin{aligned}
+ &\frac{\rms(F_{\rm CPU}(\widehat x)-F_{\rm CPU}(x))}{\rms(\widehat x-x)}\\
+ &\qquad\le \frac{e_y+\rms(F_{\rm GPU}(x)-F_{\rm CPU}(x))}{e_x}.
+ \end{aligned}
 \]
 The largest right-hand side across these pairs is at most \PrimarySecantUpper{}. The denominator uses the actual source error for each seed. The worst clean Heun1 CPU--GPU mismatch over the primary panel reaches \TargetMismatch{}. These ratios are finite-displacement bounds consistent with severe inverse sensitivity. Exact root multiplicity and local Jacobian singular values are separate properties. The same-device replay checks AA160 flags, while this compression bound uses the original AA320 run.
 
 \paragraph{Geometric Heun4.}
 This controlled repeat uses the four substeps from the structural limit and the original paired primary noise realization. It costs eight denoiser calls per map. \Cref{tab:heun4,tab:cpu-fidelity} report its recovery and the consistent CPU forward reference comparison. At the smallest ceilings the inverse has fewer candidate evaluations, even though forward RMS improves. The model is the same learned checkpoint throughout.
 
-\begin{table}[htbp]
+\begin{table*}[t]
 \centering\small
 \begin{tabular}{@{}rlrrrr@{}}\toprule
 Ceiling & Target & Failures & Mean $e_x$ & Mean $e_y$ & Mean $N_f$\\\midrule
@@ -283,9 +302,9 @@ Ceiling & Target & Failures & Mean $e_x$ & Mean $e_y$ & Mean $N_f$\\\midrule
 \bottomrule\end{tabular}
 \caption{Geometric Heun4, both target arms, reused primary 64. Forward calls are counted per inverse and exclude initialization and diagnostics.}
 \label{tab:heun4}
-\end{table}
+\end{table*}
 
-\begin{table}[htbp]
+\begin{table}[t]
 \centering\small
 \begin{tabular}{@{}lrr@{}}\toprule
 Map & CPU mean $e_{\rm flow}$ & 95\% seed-bootstrap interval\\\midrule
@@ -298,7 +317,7 @@ Map & CPU mean $e_{\rm flow}$ & 95\% seed-bootstrap interval\\\midrule
 \paragraph{Native optimizer stress test.}
 The first eight primary indices are fixed before running this diagnostic. For their regenerated clean CPU targets, run AA with up to 80 forwards followed by PyTorch L-BFGS with strong-Wolfe search, history 20, learning rate 1, gradient tolerance $10^{-13}$ and change tolerance $10^{-18}$. The continuation may evaluate up to 500 closures and uses the same $2\times10^{-6}$ residual stop. Every closure uses one map forward and one map backward, including evaluations spent in the line search. The native optimizer can stop earlier. \Cref{tab:native} reports the actual counts. This uses unequal compute across maps and is a restricted optimization control. Hong et al.~\cite{hong2024} use different optimizers, map variants and application protocols.
 
-\begin{table}[htbp]
+\begin{table*}[t]
 \centering\small
 \begin{tabular}{@{}lrrrrrr@{}}\toprule
 Map & Failures & Mean $e_x$ & Mean $e_y$ & Mean $N_f$ & Mean $N_b$ & Mean closures\\\midrule
@@ -306,18 +325,18 @@ Map & Failures & Mean $e_x$ & Mean $e_y$ & Mean $N_f$ & Mean $N_b$ & Mean closur
 \bottomrule\end{tabular}
 \caption{Native L-BFGS diagnostic on eight fixed-index reused sources. The forward count includes the AA warm work. Initialization, target generation and final diagnostics are separate.}
 \label{tab:native}
-\end{table}
+\end{table*}
 
 \FloatBarrier
 \paragraph{Recovered source arrays.}
 \Cref{fig:gallery} uses the first two latent indices from each of primary CIFAR-VP and FFHQ64. The plotted arrays are the saved returned states and the generating source. The target differs by map, since each inverse receives its own map's output. Source states at sigma 2 contain substantial noise.
 
-\begin{figure}[htbp]
+\begin{figure*}[t]
 \centering
 \includegraphics[width=\linewidth]{../figures/recovery_gallery.pdf}
 \caption{Saved clean-target inverse states on the first two indices of each shown cohort, at the respective headline AA ceilings of \PrimaryCap{} and \FFHQCap{}. All tiles share the $[-4,4]$ display mapping to retain contrast in the noisy states. Numbers beneath the reconstructions are $e_x$ on the unclipped arrays. These are learned-model interval states.}
 \label{fig:gallery}
-\end{figure}
+\end{figure*}
 
 \paragraph{Earlier scientific controls.}
 An exact 50,000-atom CIFAR training-image prior produced two Heun1 failures on 32 sources in an earlier controlled numerical experiment. This prior memorizes its atoms. Four selected full $3072$-dimensional neural Jacobians had Heun1 minimum singular values of approximately $0.00091$--$0.00419$, versus $0.05447$--$0.06045$ for DPM++2S. The Jacobians overlap the earlier VP cohort and measure local conditioning. The inherited directional response selector used 36 denoiser evaluations versus eight for a cheaper Heun2 response baseline and did not establish an acceleration benefit. Source-sketch controls received extra information and did not show a material gain. The earlier privileged noisy-target initializer received the clean output. Only the corrected target-only protocol informs the reported noisy-target recovery claims.
@@ -329,13 +348,13 @@ An exact 50,000-atom CIFAR training-image prior produced two Heun1 failures on 3
 \paragraph{What is counted.}
 The unit is a latent seed. \Cref{tab:physical} enumerates the \NestedRecords{} terminal records and corresponding physical denoiser traversals of the seven completed panels, including generation and checks where executed. Counts for shared warm starts differ from their per-arm charged work. Historical generation of the primary GPU targets precedes these seven panels. The primary diagnostics reuse the same sources, with the native check using only their first eight indices. Inference records and prefix observations are nested and the distinct checkpoint cohorts stay separate.
 
-\begin{table}[htbp]
+\begin{table}[t]
 \centering\small
 \begin{tabular}{@{}lrrr@{}}\toprule
-Panel & Terminal records & Physical forwards & Physical backwards\\\midrule
+Panel & Records & Forwards & Backwards\\\midrule
 \tablerows{../manuscript/generated/physical_rows}
 \bottomrule\end{tabular}
-\caption{Physical counts reconciled from the recorded per-block counters and component work. Each forward count is an image-level denoiser evaluation. The elapsed-time arm charges late evaluations even when their candidate is ineligible.}
+\caption{Terminal records and physical forward and backward denoiser traversals, reconciled from the recorded per-block counters and component work. Each forward count is an image-level denoiser evaluation. The elapsed-time arm charges late evaluations even when their candidate is ineligible.}
 \label{tab:physical}
 \end{table}
 
@@ -350,7 +369,7 @@ The two-image example uses CIFAR-10 arrays and a specified exact prior. The lear
 \label{sec:contracts}
 \Cref{tab:related} compares the assumptions, the retained state and the guarantee of the reversal approaches discussed in Sec.~2 of the main paper. A single-state inverse has one saved output and the known map, whereas paired recurrences retain two states.
 
-\begin{table}[htbp]
+\begin{table*}[t]
 \centering\small
 \setlength{\tabcolsep}{4pt}
 \begin{tabular}{@{}Q{.175\textwidth}Q{.179\textwidth}Q{.143\textwidth}Q{.208\textwidth}Q{.222\textwidth}@{}}
@@ -367,7 +386,7 @@ Ordinary two-stage map (this work) & One exact compact prior, fixed coefficients
 \end{tabular}
 \caption{Reversal contracts for deterministic steps. The single-state inverse has one saved output and the known map. Paired recurrences apply to both retained states.}
 \label{tab:related}
-\end{table}
+\end{table*}
 \FloatBarrier
 \section*{LLM Usage Statement}
 The main paper's LLM Usage Statement covers the study and this supplement.

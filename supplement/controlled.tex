@@ -14,7 +14,7 @@ At source $x$, for a direction $v$ normalized to $\rms(v)=1$, evaluate the cente
 \]
 We draw four independent coordinatewise Rademacher directions per seed and use those same directions for all weights and both blocks. The table gives the seed median of each seed's smallest gain among those four directions, $g_{\rm rand}$. A separate diagnostic, $g_{\rm err}$, uses the unit-RMS direction from $x$ to the selected $\widehat x$ if $e_x>10^{-8}$. That direction depends on the inverse outcome and is used only after inversion. These finite differences sample directional sensitivity at the source. A large gain along sampled directions still permits small gains in other directions. The measurements are neither minimum singular values nor bounds on the full inverse condition number.
 
-\begin{table}[H]
+\begin{table*}[t]
 \centering\small
 \setlength{\tabcolsep}{4.5pt}
 \begin{tabular}{@{}lrrrrrrrrr@{}}\toprule
@@ -25,9 +25,9 @@ Interval & $w_1$ & $w_2$ & Recovered & Mean $e_x$ & Mean $e_y$ & Mean $e_{\rm fl
 \end{tabular}
 \caption{All frozen arms of the controlled learned-model family ablation. $N_f$ is iterative work per inverse. Each arm and seed has two target, two initialization and two final residual calls outside the cap. Centered probes use four calls per direction. Gain columns report medians across seeds. The \SweepRows{} arm outcomes are nested within \SweepN{} matched latent seeds.}
 \label{tab:controlled}
-\end{table}
+\end{table*}
 
-\begin{table}[H]
+\begin{table*}[t]
 \centering\small
 \setlength{\tabcolsep}{6pt}
 \begin{tabular}{@{}lrrrrrrr@{}}\toprule
@@ -38,11 +38,11 @@ Interval & $w_1$ & Gains & Losses & Mean $\Delta N_f$ & Range of $\Delta N_f$ & 
 \end{tabular}
 \caption{Paired comparisons with $w_1=0$ within each block. Gains and losses are recovery discordances. Changes are arm minus zero for the same seed. Ranges describe the observed differences.}
 \label{tab:controlled-paired}
-\end{table}
+\end{table*}
 
-\begin{figure}[htbp]
+\begin{figure}[t]
 \centering
-\includegraphics[width=.55\linewidth]{../figures/controlled.pdf}
+\includegraphics[width=\columnwidth]{../figures/controlled.pdf}
 \caption{The full controlled sweep on both fixed-ratio intervals (main paper Fig.~3). The weight axis is categorical; panels (a) and (c) use log scales. Numbers above (a) count recovered sources and apply to both blocks. Attained residuals and $g_{\rm err}$ are in \cref{tab:controlled}.}
 \label{fig:controlled}
 \end{figure}

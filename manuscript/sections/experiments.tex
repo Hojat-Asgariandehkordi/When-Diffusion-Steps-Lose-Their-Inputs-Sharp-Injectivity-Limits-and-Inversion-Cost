@@ -1,45 +1,32 @@
-\section{Inverting learned diffusion steps}
+\section{Experiments}
 \label{sec:experiment}
-\begin{table}[t]
-\centering\small
-\setlength{\tabcolsep}{3.2pt}
-\begin{tabular}{@{}lrrrrr@{}}
-\toprule
-Step map & Calls & Clean & Noisy & $e_{\rm flow}$ & $N_f$\\
-\midrule
-\multicolumn{6}{@{}l}{\textbf{FFHQ64 VP}, $N=\FFHQN$, ceiling \FFHQCap{}}\\
-\tablerows{generated/ffhq_rows_labeled}
-\midrule
-\multicolumn{6}{@{}l}{\textbf{CIFAR-10 VP}, $N=\PrimaryN$, ceiling \PrimaryCap{}}\\
-\tablerows{generated/primary_rows_labeled}
-\midrule
-\multicolumn{6}{@{}l}{\textbf{CIFAR-10 VE}, $N=\VEN$, ceiling \FFHQCap{}}\\
-\tablerows{generated/ve_rows_labeled}
-\bottomrule
-\end{tabular}
-\caption{\textbf{Anderson recovery at each cohort's ceiling.} Clean and Noisy give recovered sources ($e_x\le0.02$). $e_{\rm flow}$ is mean forward RMS against Heun128 (lower is better). $N_f$ is mean iterative denoiser forwards on clean targets. Calls are denoiser calls per step map.}
-\label{tab:recovery}
-\end{table}
-
 We now replace the exact posterior mean by a pretrained denoising network, so $F$ denotes a learned step map with a known schedule. The question is whether the guarantee, or its absence, is visible when a numerical inverse must recover a source from a saved output under a fixed budget, and what each step costs in inverse work and in forward accuracy.
 
-\paragraph{Observation model and metrics.}
-For a source state $x$ the inverse receives the target $y=F(x)+\eta$, where $\eta=0$ for clean targets and $\eta$ is Gaussian with coordinate standard deviation $10^{-3}$ for noisy targets, paired across maps at each source. It also receives $F$ and its schedule, but not $x$, the seed or any intermediate state, which only the evaluator holds. The inverse starts from a two-step reverse Euler estimate computed from $y$ and returns an estimate $\widehat x$. With $\rms(v)=\|v\|_2/\sqrt d$ over the $d$ image coordinates, we measure the source error, the target residual and the forward error against a fine reference trajectory $F_{\rm ref}$ (Heun128 on the same network and interval),
+\subsection{Datasets}
+\label{sec:datasets}
+We use the public unconditional EDM checkpoints for CIFAR-10 in the variance-preserving (VP) and variance-exploding (VE) parameterizations and for FFHQ at $64\times64$ in VP~\cite{karras2022,cifar2009,karras2019}. A \emph{source} is a sampler state rather than a dataset image. Each source is obtained by drawing a seeded standard Gaussian array, scaling it by $80$, and running Heun64 from sigma $80$ to sigma $2$, so the inverse problem is posed at an intermediate noise level of a real sampling trajectory. Sources form three cohorts. The primary cohort has \PrimaryN{} CIFAR-VP sources whose seeds were already observed before the frozen comparison. Two fresh cohorts, \VEN{} CIFAR-VE and \FFHQN{} FFHQ64-VP sources, were frozen separately after disjoint development runs. The independently seeded source is the unit of analysis, and every method, noise and budget comparison within a cohort is paired by seed.
+
+\subsection{Experimental settings}
+\label{sec:settings}
+All maps advance the state over the stressed interval from sigma $2$ to sigma $1/8$. For a source $x$ the inverse receives the target $y=F(x)+\eta$, where $\eta=0$ for clean targets and $\eta$ is Gaussian with a fixed coordinate standard deviation for noisy targets, paired across maps at each source. It also receives $F$ and its schedule, but not $x$, the seed or any intermediate state, which only the evaluator holds. It starts from a two-step reverse Euler estimate computed from $y$ and returns an estimate $\widehat x$. A preimage of $y$ is a fixed point of $g(z)=z+y-F(z)$, and Anderson acceleration (AA)~\cite{walker2011} extrapolates this map from its most recent iterates and keeps the iterate with the smallest residual. On the primary cohort, two hybrid controls continue from the AA iterate available within 80 forwards with L-BFGS~\cite{liu1989} or with inexact Newton--GMRES~\cite{saad1986}. Every forward and backward traversal of the denoiser is charged against a common ceiling, including line searches, finite-difference Jacobian actions, unfinished work and the shared AA warm start of each hybrid. A forward pass through the \emph{step map} can call the denoiser more than once, so we report calls per map separately from the inverse's iterative work.
+
+Primary saved targets were computed on GPU and inverted on CPU; the fresh cohorts use the same CPU operator for both, and a clean CPU-target replay on the primary cohort isolates the device change. Outer states are float64 and denoisers evaluate in float32. Each inverse runs on one image at a time.
+
+\paragraph{Implementation details.}
+Noisy targets use coordinate standard deviation $10^{-3}$. AA uses memory five and damping $0.8$, and stops when $e_y<2\times10^{-6}$. Primary ceilings are 80, 160 and \PrimaryCap{} iterative denoiser traversals, and the fresh cohorts use a ceiling of \FFHQCap{} forwards. The recovery threshold is $e_x\le0.02$. Bootstrap intervals use 10,000 draws. Initialization and final diagnostics are itemized in the supplement.
+
+\subsection{Baselines}
+\label{sec:baselines}
+The compared methods are step maps, each run on the same network and interval. We write Euler2 for two Euler steps, Heun1 for one Heun step, Midpoint1 for one sigma-midpoint step, DPM++2S for one DPM-Solver++(2S) step, and Heun2 for two Heun steps; Euler2 and Heun2 use EDM's fixed sigma-power grid with exponent 7. Heun1 is the main step outside the guarantee, DPM++2S the main step inside it, and Euler2 an always-invertible first-order control. A repeated primary diagnostic also runs Heun4 on the geometric grid of \cref{cor:schedule}. The forward reference is Heun128 on the same network and interval, and its disagreement with Heun64 checks that the reference has converged. The fresh cohorts compare Heun1, DPM++2S and Heun2.
+
+We do not compare against reversible recurrences such as EDICT, BDIA, BELM or Rex~\cite{wallace2023,zhang2024,wang2024,rex2026}, because they change the sampler and retain a second state, so they answer a different question from inverting the ordinary single-output step. Likewise, null-text inversion~\cite{mokady2023} optimizes a text embedding of a conditional model, while our checkpoints are unconditional and the inverse may only search over the state.
+
+\subsection{Evaluation metrics}
+\label{sec:metrics}
+With $\rms(v)=\|v\|_2/\sqrt d$ over the $d$ image coordinates, we measure the source error, the target residual and the forward error against the reference trajectory $F_{\rm ref}$,
 \begin{align}
  e_x&=\rms(\widehat x-x),\qquad e_y=\rms(F(\widehat x)-y),\nonumber\\
  e_{\rm flow}&=\rms(F(x)-F_{\rm ref}(x)).
  \label{eq:metrics}
 \end{align}
-A source counts as recovered when $e_x\le0.02$. The inverse never sees $e_x$. It selects its output by $e_y$ and stops when $e_y<2\times10^{-6}$.
-
-\paragraph{Sources and maps.}
-We use the public unconditional EDM CIFAR-10 VP, CIFAR-10 VE and FFHQ64 VP checkpoints~\cite{karras2022,cifar2009,karras2019}. Each source is the state at sigma 2 after Heun64 from sigma 80, initialized with $80$ times a seeded standard Gaussian array. The test interval is $2\to1/8$. We compare two Euler steps, one Heun step, one sigma-midpoint step, one DPM++2S step, and two Heun steps. Two-step grids use EDM's fixed sigma-power schedule with exponent 7. A repeated primary diagnostic also uses the geometric Heun4 grid from \cref{cor:schedule}. The numerical forward reference is Heun128 on the same network and interval. We report its disagreement with Heun64 as a refinement check.
-
-\paragraph{Cohorts and precision.}
-The primary \PrimaryN{} CIFAR-VP sources were already observed before the frozen comparison. Their saved targets are from GPU execution and their inverses run on CPU. The fresh \VEN{} CIFAR-VE and \FFHQN{} FFHQ64-VP seeds were frozen separately after disjoint development runs. Their targets and inverses use the same CPU operator. Outer states are float64 and denoisers evaluate in float32. A clean CPU-target replay on the reused primary cohort isolates the effect of the device change. Each inverse runs on one image at a time. The independently seeded source is the unit of analysis. All method, noise and budget comparisons within a cohort are paired by seed.
-
-\paragraph{Inverses and work.}
-A preimage of $y$ is a fixed point of $g(z)=z+y-F(z)$. Anderson acceleration (AA)~\cite{walker2011} extrapolates this fixed-point map from its five most recent iterates, with damping $0.8$, and keeps the iterate with the smallest residual. Two primary controls start from the observed AA iterate available within 80 forwards and continue with L-BFGS~\cite{liu1989} or inexact Newton--GMRES~\cite{saad1986}. The L-BFGS control charges line searches and gradient traversals. Newton--GMRES charges centered finite-difference Jacobian actions, line searches and unfinished work. Primary ceilings are 80, 160 and \PrimaryCap{} iterative denoiser traversals. Each charges forward and backward traversals, including the shared AA warm work for each hybrid. The fresh cohorts use AA with a ceiling of \FFHQCap{} forwards. A forward pass through the \emph{step map} can call the denoiser more than once. We report these calls per map separately from the inverse's actual iterative work, and itemize initialization and final diagnostics in the supplement.
-
-\paragraph{Uncertainty.}
-Failure intervals use two-sided exact binomial limits. Mean and paired-difference intervals use 10,000 bootstrap draws of source seeds, with the same resampled indices on both sides of a contrast. Cohorts are summarized separately.
+A source counts as recovered when $e_x\le0.02$; the inverse never sees $e_x$ and selects its output by $e_y$ alone. Inverse work $N_f$ is the mean number of iterative denoiser forwards per clean target. Failure intervals use two-sided exact binomial limits. Mean and paired-difference intervals resample source seeds, with the same indices on both sides of a contrast, and cohorts are summarized separately. We write a paired difference as ``$x$ points $[l,u]$'', meaning a difference of $x$ percentage points between two maps on the same seeds with a 95\% seed-bootstrap interval from $l$ to $u$.

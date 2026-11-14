@@ -26,3 +26,14 @@ Open items for the authors
 - Figures, all one column at 8-9 pt Times: Fig. 1 (a)+(b) stacked, ratio bar moved to text; Fig. 2 trade-off with log axis so CIs show; Fig. 3 fixed-stage sweep with follow-up panels (forward RMS, directional gain), neutral colours, no text on data; Fig. 4 clean failures vs ceiling (from supplement). Arrows are neutral grey.
 - Table 3 one column. Results reorganized around three questions; sweep equation (19) added. Conclusion with limitations and future directions.
 - Main: 9 pages (8 of content + LLM statement/refs). Supplement: 15 pages. No overfull boxes; only Times/STIX in figures.
+
+## Pass 4 (updated cvpr-paper-revision skill, 2026-11-13)
+- Template: hyperref/cleveref now loaded after the preamble as in the kit's main.tex (`postamble.tex`); `\confName`/`\confYear` as in the kit. The supplement now uses the kit itself (two-column, `[review]{cvpr}`, `\maketitlesupplementary`); `geometry`/`float` removed; wide tables and figures use `table*`/`figure*`; long equations broken for the column. cvpr.sty/.bst copied byte for byte into supplement/ so Overleaf compiles it standalone.
+- Contributions: "First, ... Second, ... Third, ... Finally, ..." with no bold labels.
+- Sec. 3: Lemma 1 (posterior-mean Jacobian), Proposition 1 (nonnegative weights give a global inverse), Proposition 2 (a negative weight folds the map), Proposition 3 (transfer to approximate steps), each with a short proof; the theorem proof combines them.
+- Sec. 5 restructured: 5.1 Datasets, 5.2 Experimental settings (plus an implementation-details paragraph collecting all constants), 5.3 Baselines (short names defined; methodological reasons for excluding reversible recurrences and null-text inversion), 5.4 Evaluation metrics (defines the "x points [l, u]" notation).
+- Captions: no bold; shortened to content plus takeaway, with definitions moved to the text. Table 1 moved next to its first citation.
+- "Choosing a step" merged into a four-paragraph Conclusion (answer, selection rule, limitations, future directions).
+- LLM statement now also discloses Claude's role. BioRender was not used, so it is not cited.
+- Checks: 0 overfull boxes in both documents; every number in the previous text still appears; Supplement letters A–I and supplement-to-main references verified.
+- Page limit: the body runs about half a page onto p. 9 (CVPR limit: 8 pages excluding references). This is an expanded working draft.

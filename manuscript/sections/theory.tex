@@ -25,40 +25,39 @@ We call $F_a$ \emph{invertible} if it is a global orientation-preserving smooth 
 Fix $r>0$, $0<q<1$, $\kappa>0$ and $w_1,w_2$ with $r+w_1+w_2=1$. Then $F_a$ is invertible for every dimension $d$, every compact prior $\pi$ and every source noise $a>0$ if and only if $w_1\ge0$ and $w_2\ge0$. If either weight is negative, the fixed prior $\pi=(\delta_{-1}+\delta_{+1})/2$ on $\R$ has an open interval of outputs with at least three preimages each, for every sufficiently small $a>0$.
 \end{theorem}
 
-\paragraph{Why nonnegative weights preserve the input.}
-Differentiating \cref{eq:posterior} under the integral gives the covariance identity
+The theorem follows from three properties of the exact denoiser and the step, which we state and prove in turn: a bound on the denoiser Jacobian, a global inverse when both weights are nonnegative, and a fold when either weight is negative.
+
+\begin{lemma}[Posterior-mean Jacobian]
+\label{lem:jacobian}
+For every compact prior and every $s>0$, the map $D_s$ is smooth and
 \begin{equation}
  \nabla D_s(x)=s^{-2}\Cov(X\mid X+sZ=x).
  \label{eq:covariance}
 \end{equation}
-A covariance matrix is symmetric and positive semidefinite, so $D_s$ is the gradient of a convex function~\cite{gribonval2021}. Because the support lies in a ball of radius $R$, every posterior variance along a unit direction is at most $R^2$, hence
+If the support of $\pi$ lies in a ball of radius $R$, then
 \begin{equation}
  0\preceq\nabla D_s(x)\preceq (R^2/s^2)\,I_d .
  \label{eq:jacbound}
 \end{equation}
-Now fix an input $x$ and abbreviate the three Jacobians that enter the chain rule,
+\end{lemma}
+\begin{proof}
+The numerator and denominator of \cref{eq:posterior} are smooth in $x$, and the denominator is positive. Differentiating the Gaussian weight $e^{-\|x-u\|^2/2s^2}$ brings down the factor $(u-x)/s^2$, and the quotient rule gives the second moment minus the outer product of the first, that is, $s^{-2}$ times the posterior covariance. A covariance is symmetric positive semidefinite, and its variance along any unit direction is at most $R^2$ when the support has radius $R$.
+\end{proof}
+
+\Cref{lem:jacobian} says that $D_s$ is the gradient of a convex function~\cite{gribonval2021}: the exact denoiser never reverses a direction, and it stretches at most by $R^2/s^2$. To differentiate the step, fix an input $x$ and abbreviate the three Jacobians that enter the chain rule,
 \[
  A=\nabla D_a(x),\quad B=\nabla D_{\kappa a}(p_a(x)),\quad E=qI+(1-q)A .
 \]
-Here $A$ and $B$ are positive semidefinite by \cref{eq:covariance}, and $E=\nabla p_a(x)$ is symmetric with $E\succeq qI$. The Jacobian of the step is
+By \cref{lem:jacobian}, $A$ and $B$ are positive semidefinite, and $E=\nabla p_a(x)$ is symmetric with $E\succeq qI$. The Jacobian of the step is
 \begin{equation}
  J=\nabla F_a(x)=rI+w_1A+w_2BE .
  \label{eq:jacobian}
 \end{equation}
-The product $BE$ need not be symmetric, so $J$ is not obviously invertible. However, $E$ is positive definite and commutes with $A$, so conjugating by $E^{1/2}$ gives
-\begin{equation}
- E^{1/2}JE^{-1/2}
- =rI+w_1A+w_2E^{1/2}BE^{1/2}\succeq rI
- \label{eq:similarity}
-\end{equation}
-whenever $w_1,w_2\ge0$, since each added term is positive semidefinite. The symmetric matrix on the left has all eigenvalues at least $r$, so $J$ has a positive determinant and $\|J^{-1}\|_2\le\sqrt{\cond_2(E)}/r$. The step is therefore a local diffeomorphism everywhere.
+The product $BE$ need not be symmetric, so $J$ is not obviously invertible.
 
-Local invertibility does not exclude two distant inputs with the same output, so we repeat the argument for finite differences. For inputs $x,y$ with $v=x-y$, the averaged Jacobian $\bar A=\int_0^1\nabla D_a(y+tv)\,dt$ satisfies $D_a(x)-D_a(y)=\bar Av$, and similarly $p_a(x)-p_a(y)=\bar Ev$ with $\bar E=qI+(1-q)\bar A$. Averaging $\nabla D_{\kappa a}$ along the segment between the two stage states gives a matrix $\bar B$, and
-\begin{equation}
- F_a(x)-F_a(y)=\bigl[rI+w_1\bar A+w_2\bar B\bar E\bigr]v .
- \label{eq:finitediff}
-\end{equation}
-The averages inherit positive semidefiniteness, so the similarity in \cref{eq:similarity} applies again and the bracket is invertible. Using $qI\preceq\bar E\preceq[q+(1-q)R^2/a^2]I$ from \cref{eq:jacbound}, this yields a global lower bound on how much the step can contract distances,
+\begin{proposition}[Nonnegative weights give a global inverse]
+\label{prop:sufficient}
+If $w_1\ge0$ and $w_2\ge0$, then $F_a$ is invertible, and for all inputs $x,y$
 \begin{equation}
  \|F_a(x)-F_a(y)\|_2\ge c_*\|x-y\|_2,
  \label{eq:colip}
@@ -67,10 +66,30 @@ The averages inherit positive semidefiniteness, so the similarity in \cref{eq:si
  c_*=r\Big/\sqrt{1+\tfrac{(1-q)R^2}{q\,a^2}}>0 .
  \nonumber
 \end{equation}
-Distinct inputs thus have distinct outputs. Since the predictions are bounded, $F_a(x)=rx+O(1)$, so $F_a$ is proper. Its image is open by local invertibility and closed by properness, hence all of $\R^d$. Supplement~A gives the remaining details.
+\end{proposition}
+\begin{proof}
+The matrix $E$ is positive definite and commutes with $A$, so conjugating by $E^{1/2}$ gives
+\begin{equation}
+ E^{1/2}JE^{-1/2}
+ =rI+w_1A+w_2E^{1/2}BE^{1/2}\succeq rI,
+ \label{eq:similarity}
+\end{equation}
+since each added term is positive semidefinite. All eigenvalues of this symmetric matrix are at least $r$, so $\det J>0$ and $\|J^{-1}\|_2\le\sqrt{\cond_2(E)}/r$, and $F_a$ is a local diffeomorphism everywhere.
 
-\paragraph{Why a negative weight can fold the map.}
-For the two equally weighted atoms at $\pm1$ in one dimension, \cref{eq:posterior} becomes $D_s(x)=\tanh(x/s^2)$ with derivative $D_s'(x)=s^{-2}\operatorname{sech}^2(x/s^2)$. This derivative is of order $s^{-2}$ near the posterior transition at $x=0$ and exponentially small away from it. Writing $A_a=D'_a$ and $B_a=D'_{\kappa a}$, the scalar chain rule gives
+Local invertibility does not exclude two distant inputs with the same output, so we repeat the argument for finite differences. For inputs $x,y$ with $v=x-y$, the averaged Jacobian $\bar A=\int_0^1\nabla D_a(y+tv)\,dt$ satisfies $D_a(x)-D_a(y)=\bar Av$, and similarly $p_a(x)-p_a(y)=\bar Ev$ with $\bar E=qI+(1-q)\bar A$. Averaging $\nabla D_{\kappa a}$ along the segment between the two stage states gives a matrix $\bar B$, and
+\begin{equation}
+ F_a(x)-F_a(y)=\bigl[rI+w_1\bar A+w_2\bar B\bar E\bigr]v .
+ \label{eq:finitediff}
+\end{equation}
+The averages inherit the bounds of \cref{lem:jacobian}, so the similarity \cref{eq:similarity} applies to the bracket, and $qI\preceq\bar E\preceq[q+(1-q)R^2/a^2]I$ turns it into \cref{eq:colip}. Distinct inputs therefore have distinct outputs. Since the predictions are bounded, $F_a(x)=rx+O(1)$, so $F_a$ is proper. Its image is open by local invertibility and closed by properness, hence all of $\R^d$. Supplement~A gives the details.
+\end{proof}
+
+\begin{proposition}[A negative weight can fold the map]
+\label{prop:fold}
+If $w_1<0$ or $w_2<0$, then for the prior $\pi=(\delta_{-1}+\delta_{+1})/2$ on $\R$ and every sufficiently small $a>0$, an open interval of outputs of $F_a$ has at least three preimages each.
+\end{proposition}
+\begin{proof}
+For this prior, \cref{eq:posterior} becomes $D_s(x)=\tanh(x/s^2)$, with derivative $D_s'(x)=s^{-2}\operatorname{sech}^2(x/s^2)$. The derivative is of order $s^{-2}$ near the posterior transition at $x=0$ and exponentially small away from it. Writing $A_a=D'_a$ and $B_a=D'_{\kappa a}$, the scalar chain rule gives
 \begin{equation}
  F'_a(x)=r+w_1A_a(x)+w_2B_a(p_a(x))\,[q+(1-q)A_a(x)] .
  \label{eq:scalarderiv}
@@ -83,14 +102,28 @@ If $w_2\ge0$ and $w_1<0$, evaluate at $x=a^2$. The first derivative equals $a^{-
 \begin{equation}
  \lim_{a\downarrow0}a^2F'_a(a^2)=w_1\operatorname{sech}^2(1)<0.
 \end{equation}
-In either case $F_a$ decreases somewhere for small $a$, while $F'_a\to r>0$ in both tails and the outputs run to $-\infty$ and $+\infty$. Pick a short decreasing segment $[u,v]$. Every output strictly between $F_a(v)$ and $F_a(u)$ is attained inside the segment, to its left and to its right, which gives three distinct preimages by continuity. The prior is the same for every $a$.
+In either case $F_a$ decreases somewhere for small $a$, while $F'_a\to r>0$ in both tails and the outputs run to $-\infty$ and $+\infty$. Pick a short decreasing segment $[u,v]$. Every output strictly between $F_a(v)$ and $F_a(u)$ is attained inside the segment, to its left and to its right, which gives three distinct preimages by continuity.
+\end{proof}
+
+\begin{proof}[Proof of \cref{thm:sharp}]
+Sufficiency is \cref{prop:sufficient}, which holds for every dimension, compact prior and $a>0$. Necessity is \cref{prop:fold}, whose prior is the same for every $a$.
+\end{proof}
 
 \paragraph{Scope of the criterion.}
 The necessity is universal over priors and noise levels, not a statement about every particular map. A point-mass prior, for instance, makes every member of the family affine with slope $r$, hence injective whatever the signs. The converse uses $q<1$. When $q=1$, nonnegative weights still suffice by the symmetric Jacobian, and in the coincident case $q=\kappa=1$ the two predictions merge and the exact criterion becomes $w_1+w_2\ge0$.
 
-The bound \cref{eq:colip} also transfers to approximate denoisers. If a learned step is written as $\widehat F_a=F_a+e$ with an error map $e$ whose Lipschitz constant is below $c_*$, then
+The bound \cref{eq:colip} also carries over to approximate denoisers.
+
+\begin{proposition}[Transfer to approximate steps]
+\label{prop:transfer}
+Let $\widehat F_a=F_a+e$, where $F_a$ satisfies \cref{eq:colip} and the error map $e$ has Lipschitz constant $\operatorname{Lip}(e)<c_*$. Then $\widehat F_a$ is a bijection of $\R^d$ and
 \begin{equation}
- \|\widehat F_a(x)-\widehat F_a(y)\|_2\ge(c_*-\operatorname{Lip}(e))\,\|x-y\|_2,
+ \|\widehat F_a(x)-\widehat F_a(y)\|_2\ge(c_*-\operatorname{Lip}(e))\,\|x-y\|_2 .
  \label{eq:transfer}
 \end{equation}
-and a contraction argument shows that $\widehat F_a$ is again onto (Supplement~A). The learned experiments do not measure such a uniform error bound, so they are reported separately from the exact guarantee.
+\end{proposition}
+\begin{proof}
+The inequality follows from \cref{eq:colip} and the triangle inequality. For surjectivity, a preimage of $y$ is a fixed point of $x\mapsto F_a^{-1}(y-e(x))$, which is a contraction with constant $\operatorname{Lip}(e)/c_*<1$ (Supplement~A).
+\end{proof}
+
+The learned experiments do not measure such a uniform error bound, so they are reported separately from the exact guarantee.

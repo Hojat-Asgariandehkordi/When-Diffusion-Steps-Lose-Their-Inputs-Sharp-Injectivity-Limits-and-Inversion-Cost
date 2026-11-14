@@ -1,9 +1,14 @@
 \documentclass[10pt,twocolumn,letterpaper]{article}
-\usepackage[review]{cvpr}
+\usepackage[review]{cvpr}      % To produce the REVIEW version
 \input{preamble}
+\definecolor{cvprblue}{rgb}{0.21,0.49,0.74}
+\usepackage[pagebackref,breaklinks,colorlinks,allcolors=cvprblue]{hyperref}
+\input{postamble}
+\hypersetup{pdftitle={When Diffusion Steps Lose Their Inputs: Sharp Injectivity Limits and Inversion Cost}}
 \input{generated/numbers}
 \input{generated/round2_numbers}
-\def\confName{CVPR}\def\confYear{2027}
+\def\confName{CVPR}
+\def\confYear{2027}
 \title{When Diffusion Steps Lose Their Inputs:\\Sharp Injectivity Limits and Inversion Cost}
 \author{Anonymous CVPR submission}
 
@@ -23,7 +28,7 @@ Diffusion models are often run backwards: an editing or replay pipeline must rec
 \clearpage
 
 \section*{LLM Usage Statement}
-OpenAI Codex assisted extensively with literature retrieval and synthesis, mathematical derivation and checking, implementation and execution of experiments, figures from equations and saved observations, manuscript drafting and revision, and author-side technical review.
+OpenAI Codex assisted extensively with literature retrieval and synthesis, mathematical derivation and checking, implementation and execution of experiments, figures from equations and saved observations, manuscript drafting and revision, and author-side technical review. Anthropic's Claude assisted with revising the manuscript and supplement text, mathematical exposition, layout, and the plotting scripts that regenerate the figures from the saved results.
 The image tiles come from stored arrays and exact affine constructions.
 The authors are responsible for verifying and defending the work.
 {\small\bibliographystyle{ieeenat_fullname}\bibliography{references}}
