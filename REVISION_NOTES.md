@@ -66,3 +66,8 @@ Open items for the authors
 - Rebuilt Table 1 with siunitx S columns: decimals aligned, headings centred over their columns, a grouped "Recovered ↑" header over Clean/Noisy, and direction arrows (↑ more is better, ↓ less is better).
 - Recovery is shown as counts; N and the ceiling are in each cohort header ("FFHQ64 VP (N = 64, ceiling 160)"), which removes the repeated "/64".
 - Bold marks the best value per cohort (ties all bold). Rows are formatted by scripts/make_table1.py from the verified generated/*_rows_labeled.tex, and the script check confirms they are identical to that source.
+
+## Pass 10 (author's Figure 1, 2026-11-14)
+- Replaced Fig. 1 with the authors' PowerPoint figure (InjectibilityFigure1.pdf), cropped from a letter page to its content: figures/figure1_overview_authors.pdf. The uncropped original is kept in figures/original/. The old BioRender version (figures/overview.pdf and its script) is kept but no longer used.
+- Caption rewritten to match panels A–D, and the Sec. 3 references now read Fig. 1A–D. The BioRender credit was removed from the caption and the LLM statement, since this figure is not BioRender art.
+- Figure issues reported to the authors (artwork not edited): Panel D is missing the Heun2 mean inverse forwards (158.3); Panel C shows ">=[log2(a/b)]" where the paper has ⌈log₂(a/b)⌉ as the minimum; in Panel A the W1 path starts at the input instead of at D_a(x), and "q" labels the arrow into D_a; the figure uses Roboto/Calibri rather than Times; minor spacing such as "DPM ++ 2S".

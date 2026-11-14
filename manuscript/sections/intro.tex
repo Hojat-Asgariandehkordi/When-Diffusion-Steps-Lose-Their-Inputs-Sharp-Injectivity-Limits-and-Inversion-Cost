@@ -7,8 +7,8 @@ Our central observation is that the exact denoiser, the posterior mean of the da
 
 \begin{figure*}[t]
 \centering
-\includegraphics[width=\textwidth]{../figures/overview.pdf}
-\caption{Overview. (a) A two-stage step $F_a$ calls the denoiser on the input and on a stage state, then mixes the two predictions with weights $w_1,w_2$. (b) Nonnegative weights make $F_a$ invertible for every prior and noise level; a negative weight can fold it so that three inputs share one output. (c) Over the same interval, a guaranteed Heun schedule needs four substeps, while one DPM++2S step suffices. (d) A numerical inverse that sees only the saved output recovers every FFHQ64 source for DPM++2S and Heun2 (64/64) but only 5/64 for one Heun step. Artwork created in BioRender; all labels typeset by the authors.}
+\includegraphics[width=\textwidth]{../figures/figure1_overview_authors.pdf}
+\caption{Overview. (A) A two-stage step $F_a$ calls the denoiser on the input and on a stage state $p_a(x)$, then mixes the input and the two predictions with weights $r$, $w_1$ and $w_2$. (B) Nonnegative prediction weights make $F_a$ invertible for every prior and noise level; a negative weight can fold it so that three inputs share one output. (C) From $a=2$ to $b=1/8$, a guaranteed Heun schedule needs four half-ratio substeps, while one DPM++2S step suffices. (D) A numerical inverse that sees only the saved output recovers every FFHQ64 source for DPM++2S and Heun2 (64/64) but only 5/64 for one Heun step.}
 \label{fig:overview}
 \end{figure*}
 
